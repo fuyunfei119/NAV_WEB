@@ -1,0 +1,25 @@
+html,
+body,
+#app {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --Standard: #212121;
+    --Accent: #00B7C3;
+    --Subordinate: rgb(235,237,239,1);
+    font-family:  "Segoe UI Semibold",
+        "Segoe WP Semibold",
+        device-segoe-semibold,
+        "Segoe UI",
+        "Segoe WP",
+        Segoe,
+        Tahoma,
+        Helvetica,
+        Arial,
+        sans-serif !important
+}

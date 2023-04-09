@@ -1,10 +1,12 @@
 <script setup>
-  import List from '../components/List.vue'
+import NavBar from "../components/NavBar.vue";
+import Card from "@/components/Card.vue";
 </script>
 
 <template>
   <div class="container">
-    <List></List>
+    <NavBar></NavBar>
+    <Card></Card>
   </div>
 </template>
 
