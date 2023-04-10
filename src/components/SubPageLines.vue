@@ -590,6 +590,15 @@
 
 <script setup>
 
+const openCard = () => {
+    router.push(
+        {
+            path: '/document',
+            name: 'document',
+            component: Document
+        },
+    )
+}
 </script>
 
 <style scoped>
