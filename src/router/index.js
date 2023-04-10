@@ -23,7 +23,7 @@ const router = createRouter({
     },
     {
       path: '/document',
-      name: '/document',
+      name: 'document',
       component: DocumentView
     }
     // {

@@ -32,7 +32,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <th scope="row" @click="openCard()">1</th>
+                        <th scope="row" @click="openDocument()">1</th>
                         <td>Mark</td>
                         <td>Otto</td>
                         <td>@mdo</td>
@@ -55,7 +55,7 @@
                         <td>lorem</td>
                     </tr>
                     <tr>
-                        <th scope="row" @click="openCard()">1</th>
+                        <th scope="row" @click="openDocument()">1</th>
                         <td>Mark</td>
                         <td>Otto</td>
                         <td>@mdo</td>
@@ -78,7 +78,7 @@
                         <td>lorem</td>
                     </tr>
                     <tr>
-                        <th scope="row" @click="openCard()">1</th>
+                        <th scope="row" @click="openDocument()">1</th>
                         <td>Mark</td>
                         <td>Otto</td>
                         <td>@mdo</td>
@@ -101,7 +101,7 @@
                         <td>lorem</td>
                     </tr>
                     <tr>
-                        <th scope="row" @click="openCard()">1</th>
+                        <th scope="row" @click="openDocument()">1</th>
                         <td>Mark</td>
                         <td>Otto</td>
                         <td>@mdo</td>
@@ -124,7 +124,7 @@
                         <td>lorem</td>
                     </tr>
                     <tr>
-                        <th scope="row" @click="openCard()">1</th>
+                        <th scope="row" @click="openDocument()">1</th>
                         <td>Mark</td>
                         <td>Otto</td>
                         <td>@mdo</td>
@@ -147,7 +147,7 @@
                         <td>lorem</td>
                     </tr>
                     <tr>
-                        <th scope="row" @click="openCard()">1</th>
+                        <th scope="row" @click="openDocument()">1</th>
                         <td>Mark</td>
                         <td>Otto</td>
                         <td>@mdo</td>
@@ -170,7 +170,7 @@
                         <td>lorem</td>
                     </tr>
                     <tr>
-                        <th scope="row" @click="openCard()">1</th>
+                        <th scope="row" @click="openDocument()">1</th>
                         <td>Mark</td>
                         <td>Otto</td>
                         <td>@mdo</td>
@@ -193,7 +193,7 @@
                         <td>lorem</td>
                     </tr>
                     <tr>
-                        <th scope="row" @click="openCard()">1</th>
+                        <th scope="row" @click="openDocument()">1</th>
                         <td>Mark</td>
                         <td>Otto</td>
                         <td>@mdo</td>
@@ -216,7 +216,7 @@
                         <td>lorem</td>
                     </tr>
                     <tr>
-                        <th scope="row" @click="openCard()">1</th>
+                        <th scope="row" @click="openDocument()">1</th>
                         <td>Mark</td>
                         <td>Otto</td>
                         <td>@mdo</td>
@@ -239,7 +239,7 @@
                         <td>lorem</td>
                     </tr>
                     <tr>
-                        <th scope="row" @click="openCard()">1</th>
+                        <th scope="row" @click="openDocument()">1</th>
                         <td>Mark</td>
                         <td>Otto</td>
                         <td>@mdo</td>
@@ -262,7 +262,7 @@
                         <td>lorem</td>
                     </tr>
                     <tr>
-                        <th scope="row" @click="openCard()">1</th>
+                        <th scope="row" @click="openDocument()">1</th>
                         <td>Mark</td>
                         <td>Otto</td>
                         <td>@mdo</td>
@@ -285,7 +285,7 @@
                         <td>lorem</td>
                     </tr>
                     <tr>
-                        <th scope="row" @click="openCard()">1</th>
+                        <th scope="row" @click="openDocument()">1</th>
                         <td>Mark</td>
                         <td>Otto</td>
                         <td>@mdo</td>
@@ -308,7 +308,7 @@
                         <td>lorem</td>
                     </tr>
                     <tr>
-                        <th scope="row" @click="openCard()">1</th>
+                        <th scope="row" @click="openDocument()">1</th>
                         <td>Mark</td>
                         <td>Otto</td>
                         <td>@mdo</td>
@@ -589,8 +589,12 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
+import Document from './Document.vue';
 
-const openCard = () => {
+
+const router = useRouter();
+const openDocument = () => {
     router.push(
         {
             path: '/document',
