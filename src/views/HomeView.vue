@@ -1,12 +1,12 @@
-<script setup>
-  import List from '../components/List.vue'
-</script>
-
 <template>
-  <div class="container">
-    <List></List>
-  </div>
+    <div class="container">
+        <Dashboard></Dashboard>
+    </div>
 </template>
+
+<script setup>
+import Dashboard from '../components/Dashboard.vue'
+</script>
 
 <style scoped>
 .container {
