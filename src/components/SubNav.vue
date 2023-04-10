@@ -1,6 +1,6 @@
 <template>
     <div class="container-subnav">
-        <span class="company-name">
+        <span @click="ReturnHome()" class="company-name">
             <h3>Sievers-Group AG |</h3>
         </span>
 
@@ -25,12 +25,21 @@
 </template>
 
 <script setup>
-    import module from '../components/types/Module'
+    import { useRouter } from 'vue-router';
+import module from '../components/types/Module'
 
     const emits = defineEmits(['OnChangeControlBar'])
+    const router = useRouter();
 
     const handleDropDown = (moduleName) => {
         emits('OnChangeControlBar',moduleName);
+    }
+
+    function ReturnHome() {
+        router.push({
+            path: '/',
+            name: '/'
+        })
     }
 </script>
 

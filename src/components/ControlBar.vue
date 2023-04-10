@@ -5,8 +5,8 @@
             Customer
         </span>
 
-        <div v-for="(item, index) in ButtonsToRender" :key="index" class="buttons-controlbar">
-            <a href="">{{ item.ControlName }}</a>
+        <div @click="RedirectPage(item)" v-for="(item, index) in ButtonsToRender" :key="index" class="buttons-controlbar">
+            <a>{{ item.ControlName }}</a>
         </div>
     </div>
 </template>
@@ -14,6 +14,11 @@
 <script setup>
 import { ref } from 'vue';
 import module from '../components/types/Module'
+import List from './List.vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
 const ButtonsOfDefault = [
     {
         "ControlName": "Search"
@@ -83,7 +88,6 @@ const ButtonsOfPurchase = [
         "ControlName": "Return Purchase"
     }
 ]
-
 const ButtonsOfDocument = [
     {
         "ControlName": "Posted Sales Invoices"
@@ -107,7 +111,6 @@ const ButtonsOfDocument = [
         "ControlName": "Purchase Order Archives"
     }
 ]
-
 const ButtonsOfInventory = [
     {
         "ControlName": "Items"
@@ -130,8 +133,29 @@ const ButtonsOfInventory = [
 ]
 let ButtonsToRender = ref(ButtonsOfDefault);
 
-
-
+function RedirectPage(target) {
+    switch (target.ControlName) {
+        case 'Customer':
+            router.push({
+                path: '/list',
+                name: 'list',
+                component: List
+            })
+            break;
+        case module.PURCHASING:
+            WithPurchase();
+            break;
+        case module.POSTED_DOCUMENTS:
+            WithPostedDocument();
+            break;
+        case module.INVENTORY:
+            WithInventory();
+            break;
+        default:
+            router.push('/')
+            break;
+    }
+}
 
 function RenderButtons(moduleName) {
     switch (moduleName) {
@@ -144,7 +168,7 @@ function RenderButtons(moduleName) {
         case module.POSTED_DOCUMENTS:
             WithPostedDocument();
             break;
-            case module.INVENTORY:
+        case module.INVENTORY:
             WithInventory();
             break;
         default:
