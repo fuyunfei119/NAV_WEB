@@ -5,59 +5,21 @@
             <table>
                 <thead>
                     <tr>
-                        <!-- <th scope="col">#</th> -->
-                        <th v-for="header in lineHeader" :key="header">{{ header }}</th>
+                        <th 
+                            v-for="header in lineHeader" 
+                            :key="header"
+                            :class="{ 'expand' : expand }"
+                        >{{ header }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="item in lines" :key="item.id">
-                        <td v-for="(value, header) in item" :key="header">{{ value }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row" @click="openCard()">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
+                        <td 
+                            v-for="(value, header, index) in item" 
+                            :key="header + index"
+                            @click=" index == 0 ? openCard() : null" 
+                            >{{ value }}
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -66,10 +28,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Card from './Card.vue';
+
+const expand = computed(() => lineHeader.value.length > 6);
 
 const lines = ref([]);
 const lineHeader = ref({});
@@ -89,16 +53,7 @@ onMounted(async () => {
     axios.get('http://localhost:8080/FindSet')
         .then(response => {
             lines.value = response.data;
-
             lineHeader.value = Object.keys(lines.value[0]);
-
-            lineHeader.value.forEach(item => {
-                console.log(item);
-            })
-
-            lines.value.forEach(item => {
-                console.log(item);
-            });
         })
         .catch(error => {
             console.log(error);
@@ -125,9 +80,14 @@ onMounted(async () => {
 }
 
 table {
-    display: inherit;
+    display: table;
+    table-layout: auto;
     text-align: left;
     border-collapse: collapse;
+}
+
+thead > tr, tbody > tr {
+    line-height: 25px;
 }
 
 tr:hover {
@@ -135,17 +95,23 @@ tr:hover {
     color: aliceblue;
 }
 
-th {
-    cursor: pointer;
+tr {
+    width: 100%;
 }
 
-th:hover {
-    border-bottom: 1px dotted var(--Accent);
+th {
+    cursor: pointer;
 }
 
 td,
 th {
     padding: 10px 20px;
-    min-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.expand {
+    min-width: 200px;
 }
 </style>
