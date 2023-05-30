@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Card from './Card.vue';
@@ -37,6 +37,7 @@ const expand = computed(() => lineHeader.value.length > 6);
 
 const lines = ref([]);
 const lineHeader = ref({});
+const isRecordLoaded = ref(false);
 
 const router = useRouter();
 const openCard = () => {
@@ -49,7 +50,7 @@ const openCard = () => {
     )
 }
 
-onMounted(async () => {
+const findSet = () => {
     axios.get('http://localhost:8080/FindSet')
         .then(response => {
             lines.value = response.data;
@@ -58,6 +59,18 @@ onMounted(async () => {
         .catch(error => {
             console.log(error);
         });
+}
+
+watch(lines, (newLines) => {
+    if (!isRecordLoaded.value) {
+        isRecordLoaded.value = true;
+    }else {
+        findSet();
+    }
+});
+
+onMounted(async () => {
+    findSet();
 });
 </script>
 
