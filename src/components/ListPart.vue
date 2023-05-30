@@ -2,13 +2,13 @@
 <template>
     <div class="container">
         <div class="inner-container">
-            <table>
+            <table :class="{ 'expand-table' : expand }">
                 <thead>
                     <tr>
                         <th 
                             v-for="header in lineHeader" 
                             :key="header"
-                            :class="{ 'expand' : expand }"
+                            :class="{ 'expand-th' : expand }"
                         >{{ header }}</th>
                     </tr>
                 </thead>
@@ -81,7 +81,8 @@ onMounted(async () => {
 
 table {
     display: table;
-    table-layout: auto;
+    table-layout: fixed;
+    width: 100%;
     text-align: left;
     border-collapse: collapse;
 }
@@ -111,7 +112,15 @@ th {
     text-overflow: ellipsis;
 }
 
-.expand {
+.expand-th {
     min-width: 200px;
+}
+
+.expand-table {
+    width: unset;
+    display: table;
+    table-layout: fixed;
+    text-align: left;
+    border-collapse: collapse;
 }
 </style>
