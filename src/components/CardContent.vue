@@ -17,74 +17,33 @@ const general = ref({
     "GroupName": "General",
     "Fields":
         [
-            {
-                "FieldName": "Customer Name",
-                "FieldValue": "Hamburg Software AG"
-            },
-            {
-                "FieldName": "Customer No.",
-                "FieldValue": "10100"
-            },
-            {
-                "FieldName": "Address",
-                "FieldValue": "Lange Str. 10-15"
-            },
-            {
-                "FieldName": "Address",
-                "FieldValue": "Lange Str. 10-15"
-            },
-            {
-                "FieldName": "Address",
-                "FieldValue": "Lange Str. 10-15"
-            },
+            { "Customer Name": "Hamburg Software AG" },
+            { "Customer No.": "10100" },
+            { "Address": "Lange Str. 10-15" },
+            { "Address": "Lange Str. 10-15" },
+            { "Address": "Lange Str. 10-15" },
         ]
 })
 
 const invoice = ref({
     "GroupName": "Invoice Details",
-    "Fields": [
-        {
-            "FieldName": "Currency Code",
-            "FieldValue": "EU"
-        },
-        {
-            "FieldName": "VAT Bus. Posting Group",
-            "FieldValue": "INLAND"
-        },
-        {
-            "FieldName": "Customer Posting Group",
-            "FieldValue": "INLAND"
-        },
-        {
-            "FieldName": "Payment Terms Code",
-            "FieldValue": "BBL"
-        },
-    ]
+    "Fields":
+        [
+            { "Currency Code": "EU" },
+            { "VAT Bus. Posting Group": "INLAND" },
+            { "Customer Posting Group": "INLAND" },
+            { "Payment Terms Code": "BBL" },
+        ]
 })
 
 const shipping = ref({
     "GroupName": "Invoice Details",
     "Fields": [
-        {
-            "FieldName": "Ship-to",
-            "FieldValue": "Customer Address"
-        },
-        {
-            "FieldName": "Contact",
-            "FieldValue": "Frau Claudia"
-        },
-        {
-            "FieldName": "Shipment Date",
-            "FieldValue": "1/9/2025"
-        },
-        {
-            "FieldName": "Location Code",
-            "FieldValue": "A"
-        },
-        {
-            "FieldName": "Bill-to",
-            "FieldValue": "Customer Address"
-        },
+        { "Ship-to": "Customer Address" },
+        { "Contact": "Frau Claudia" },
+        { "Shipment Date": "1/9/2025" },
+        { "Location Code": "A" },
+        { "Bill-to": "Customer Address" },
     ]
 })
 </script>

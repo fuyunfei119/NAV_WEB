@@ -5,21 +5,11 @@
         <hr>
 
         <div class="content">
-            <span class="left">
-                <div class="item" v-for="(item, index) in leftFields" :key="index">
-                    <h5>{{ item.FieldName }}</h5>
-                    <hr>
-                    <input type="text" :value="item.FieldValue">
-                </div>
-            </span>
-
-            <span class="right">
-                <div class="item" v-for="(item, index) in rightFields" :key="index">
-                    <h5>{{ item.FieldName }}</h5>
-                    <hr>
-                    <input type="text" :value="item.FieldValue">
-                </div>
-            </span>
+            <div class="item" v-for="(item, index) in allfields" :key="index">
+                <h5>{{ getFieldName(item) }}</h5>
+                <hr>
+                <input type="text" :value="Object.values(item)">
+            </div>
         </div>
 
     </section>
@@ -32,9 +22,10 @@ const props = defineProps({
 })
 
 const groupName = props.fields.GroupName;
-const middleIndex = Math.ceil(props.fields.Fields.length / 2);
-const leftFields = props.fields.Fields.splice(0, middleIndex);
-const rightFields = props.fields.Fields.splice(-middleIndex);
+const allfields = props.fields.Fields;
+
+const getFieldName = (item) => Object.keys(item).at(0);
+
 </script>
 
 <style scoped>
@@ -45,11 +36,7 @@ h5 {
 
 .content {
     display: flex;
-}
-
-.left,
-.right {
-    flex: 1;
+    flex-wrap: wrap;
 }
 
 .left>.item {
@@ -57,10 +44,11 @@ h5 {
 }
 
 .item {
+    flex-basis: 48%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0% 0% 2% 0%;
+    padding: 0% 2% 2% 0%;
     line-height: 28px;
 }
 
