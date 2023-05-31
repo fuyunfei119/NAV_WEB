@@ -1,13 +1,53 @@
 <template>
     <div class="document-container">
         <DocumentHeader></DocumentHeader>
-        <DocumentList></DocumentList>
+        <DocumentList 
+            :lines="lines"
+            :lineHeader="lineHeader"
+        ></DocumentList>
     </div>
 </template>
 
 <script setup>
+import { ref, onMounted, watch } from 'vue';
 import DocumentHeader from './DocumentHeader.vue';
 import DocumentList from './DocumentList.vue';
+import axios from 'axios';
+
+const props = defineProps({
+    tableName: String
+})
+
+console.log(props.tableName);
+
+const lines = ref([]);
+const lineHeader = ref({});
+const isRecordLoaded = ref(false);
+
+const findSet = () => {
+    axios.get('http://localhost:8080/?table=Customer')
+        .then(response => {
+            lines.value = response.data;
+            lineHeader.value = Object.keys(lines.value[0]);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+}
+
+watch(lines, (newLines) => {
+    if (!isRecordLoaded.value) {
+        isRecordLoaded.value = true;
+    }else {
+        findSet();
+    }
+});
+
+onMounted(async () => {
+    findSet();
+});
+
+
 </script>
 
 <style scoped>

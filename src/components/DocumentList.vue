@@ -1,97 +1,23 @@
 <template>
     <div class="Document-List">
-        <hr>
         <div class="documents">
             <table>
                 <thead>
                     <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">First</th>
-                        <th scope="col">Last</th>
-                        <th scope="col">Handle</th>
-                        <th scope="col">First</th>
-                        <th scope="col">Last</th>
-                        <th scope="col">Handle</th>
-                        <th scope="col">First</th>
-                        <th scope="col">Last</th>
-                        <th scope="col">Handle</th>
-                        <th scope="col">First</th>
-                        <th scope="col">Last</th>
-                        <th scope="col">Handle</th>
-                        <th scope="col">First</th>
-                        <th scope="col">Last</th>
-                        <th scope="col">Handle</th>
+                        <th 
+                            v-for="header in lineHeader" 
+                            :key="header"
+                        >{{ header }}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <th scope="row" @click="openCard()">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
-                        <td>@mdo</td>
-                        <td>xxx</td>
-                        <td>adasdasadadasd</td>
-                        <td>lorem</td>
+                    <tr v-for="item in lines" :key="item.id">
+                        <td 
+                            v-for="(value, header, index) in item" 
+                            :key="header + index"
+                            @click=" index == 0 ? openCard() : null" 
+                            >{{ value }}
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -101,12 +27,22 @@
 
 <script setup>
 
+const props = defineProps({
+    lines: Array,
+    lineHeader: Object
+});
+
+
+console.log(props.lineHeader);
+console.log(props.lines);
+
 </script>
 
 <style scoped>
 .Document-List {
+    overflow-x: auto;
     flex: 15;
-    padding: 2% 2%;
+    padding: 1% 2%;
 }
 
 .Document-List>hr {
@@ -124,9 +60,13 @@
     border-collapse: collapse;
 }
 
-tr:hover {
+tbody > tr:hover {
     background-color: var(--Accent);
     color: aliceblue;
+}
+
+tbody > tr {
+    line-height: 25px;
 }
 
 th {
@@ -141,6 +81,8 @@ td,
 th {
     padding: 10px 20px;
     min-width: 100px;
-    text-align: center;
+    text-align: left;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 </style>

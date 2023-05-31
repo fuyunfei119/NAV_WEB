@@ -30,7 +30,8 @@ const router = createRouter({
     {
       path: '/document',
       name: 'document',
-      component: DocumentView
+      component: DocumentView,
+      props: (route) => ({ table: route.query.table })
     }
     // {
     //   path: '/about',
