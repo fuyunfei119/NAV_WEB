@@ -16,6 +16,7 @@ import { ref } from 'vue';
 import module from '../components/types/Module'
 import List from './List.vue';
 import { useRouter } from 'vue-router';
+import Card from './Card.vue';
 
 const router = useRouter();
 
@@ -32,15 +33,15 @@ const ButtonsOfDefault = [
     {
         "ControlName": "Home"
     },
-    {
-        "ControlName": "Customer"
-    },
-    {
-        "ControlName": "New Document"
-    },
-    {
-        "ControlName": "Prices"
-    }
+    // {
+    //     "ControlName": "Customer"
+    // },
+    // {
+    //     "ControlName": "New Document"
+    // },
+    // {
+    //     "ControlName": "Prices"
+    // }
 ]
 const ButtonsOfSales = [
     {
@@ -152,10 +153,25 @@ function RedirectPage(target) {
             WithInventory();
             break;
         default:
-            router.push('/')
+            HandlePageAction(target.ControlName);
             break;
     }
 }
+
+const HandlePageAction = (ControlName) => {
+    switch (ControlName) {
+        case 'New': 
+            router.push({
+                path: '/card',
+                name: 'card',
+                component: Card
+            })
+            break;
+        default:
+            break;
+    }
+}
+
 
 function RenderButtons(moduleName) {
     switch (moduleName) {
@@ -232,5 +248,10 @@ defineExpose({
     justify-content: space-around;
     height: 48px;
     line-height: 60px;
+}
+
+.buttons-controlbar > a:hover {
+    cursor: pointer;
+    text-decoration: underline;
 }
 </style>
