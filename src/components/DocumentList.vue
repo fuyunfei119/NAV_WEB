@@ -1,5 +1,6 @@
 <template>
     <div class="Document-List">
+        <FilterBarVue></FilterBarVue>
         <div class="documents">
             <table>
                 <thead>
@@ -26,6 +27,7 @@
 </template>
 
 <script setup>
+import FilterBarVue from './FilterBar.vue';
 
 const props = defineProps({
     lines: Array,
@@ -39,6 +41,7 @@ const props = defineProps({
     overflow-x: auto;
     flex: 15;
     padding: 1% 2%;
+    display: flex;
 }
 
 .Document-List>hr {
@@ -46,6 +49,7 @@ const props = defineProps({
 }
 
 .documents {
+    flex: 8;
     overflow: auto;
     height: 100%;
     width: 100%;
