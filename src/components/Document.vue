@@ -15,17 +15,18 @@ import DocumentList from './DocumentList.vue';
 import axios from 'axios';
 
 const props = defineProps({
-    tableName: String
+    table: String
 })
 
-console.log(props.tableName);
+const tableName = props.table;
+const url = 'http://localhost:8080/?table=' + tableName;
 
 const lines = ref([]);
 const lineHeader = ref({});
 const isRecordLoaded = ref(false);
 
 const findSet = () => {
-    axios.get('http://localhost:8080/?table=Customer')
+    axios.get(url)
         .then(response => {
             lines.value = response.data;
             lineHeader.value = Object.keys(lines.value[0]);

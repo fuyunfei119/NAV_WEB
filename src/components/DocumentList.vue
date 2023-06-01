@@ -32,10 +32,6 @@ const props = defineProps({
     lineHeader: Object
 });
 
-
-console.log(props.lineHeader);
-console.log(props.lines);
-
 </script>
 
 <style scoped>

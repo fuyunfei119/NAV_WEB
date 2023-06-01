@@ -6,14 +6,13 @@
 </template>
 
 <script setup>
+import { useRoute } from 'vue-router';
+
 import Document from '@/components/Document.vue';
 import NavBar from '@/components/NavBar.vue';
 
-const props = defineProps({
-    table: String
-})
-
-const tableName = props.table;
+const route = useRoute();
+const tableName = route.query.table;
 
 </script>
 

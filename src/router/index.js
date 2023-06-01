@@ -9,12 +9,14 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: '/',
-      redirect: '/home'
-    },
-    {
-      path: '/home',
       name: 'home',
+      beforeEnter: (to,from,next) => {
+        if (!to.query.hasOwnProperty('table')) {
+          next();
+        } else {
+          next({ name : 'document', query: to.query, replace: true });
+        }
+      },
       component: HomeView
     },
     {
@@ -30,19 +32,11 @@ const router = createRouter({
     {
       path: '/document',
       name: 'document',
-      component: DocumentView,
-      props: (route) => ({ table: route.query.table })
+      component: DocumentView
     }
-    // {
-    //   path: '/about',
-    //   name: 'about',
-    //   // route level code-splitting
-    //   // this generates a separate chunk (About.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
-    //   component: () => import('../views/AboutView.vue')
-    // }
   ]
 })
+
 
 export default router
 
