@@ -6,11 +6,10 @@
 
         <div class="right">
             <a href="">Search</a>
-            <a href="">New</a>
         </div>
 
         <a class="back-button" @click="goback()">
-                <h4>Back</h4>
+            <h4>Back</h4>
         </a>
     </header>
 </template>
@@ -42,7 +41,7 @@ header {
     align-items: center;
 }
 
-.right > a {
+.right>a {
     margin-right: 20px;
 }
 

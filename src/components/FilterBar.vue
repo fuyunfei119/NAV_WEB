@@ -6,19 +6,31 @@
 
         <div v-for="filter in filterGroups" :key="filter">
 
-            {{ filter }}
+            <h5>{{ filter }}</h5>
 
             <div class="dropdown">
 
                 <input type="text" @click="toggleDropdown(filter)" ref="domRef" v-model="selectedOption[filter]">
 
                 <ul v-if="isDropdownOpen(filter)" class="show">
-                    <li v-for="Option in dropdownOptions[filter]" :key="Option" @click="selectOptions(Option, filter)"> {{
-                        Option }}
+                    <li v-for="Option in dropdownOptions[filter]" :key="Option" @click="selectOptions(Option, filter)">
+                        {{ Option }}
                     </li>
                 </ul>
 
             </div>
+        </div>
+
+        <hr>
+
+        <div class="add-group" @click="toggleGroupDropdown()" ref="filterGroupDropDown">
+            <h1>+</h1>
+            <h4>Add Filter</h4>
+            <ul v-if="showfilterGroupDropdown" class="show">
+                <li v-for="filterName in filterGroupInit" :key="filterName" @click="selectFilterGroup(filterName)"> {{
+                    filterName }}
+                </li>
+            </ul>
         </div>
     </div>
 </template>
@@ -27,15 +39,15 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
 
-// const filterGroups = ref([]);
-// const filterGroups = ['user_id', 'first_name'];
-const filterGroups = ['Group 1', 'Group 2', 'Group 3'];
+const filterGroupInit = ref([]);
+const filterGroups = ref([]);
 const dropdownOptions = ref({});
 const selectedOption = ref({});
-const filterConditions = ref({});
 
 const openDropdowns = ref([]);
 const domRef = ref();
+const filterGroupDropDown = ref();
+const showfilterGroupDropdown = ref(false);
 
 function toggleDropdown(filter) {
     const index = openDropdowns.value.indexOf(filter);
@@ -47,14 +59,27 @@ function toggleDropdown(filter) {
     }
 }
 
+function toggleGroupDropdown() {
+    showfilterGroupDropdown.value = !showfilterGroupDropdown.value;
+}
+
+const InitFilterGroups = async () => {
+    await axios.post(`http://localhost:8080/getfilterGroups`, {
+        table: "Customer"
+    })
+        .then(response => {
+            filterGroupInit.value = response.data;
+        })
+        .catch(error => {
+            console.log(error);
+        });
+}
+
 function isDropdownOpen(filter) {
     return openDropdowns.value.includes(filter);
 }
 
 const fetchDropDownOptions = async (filter) => {
-
-    console.log(filter);
-
     try {
         const response = await axios.post(`http://localhost:8080/getfilterOptions`, {
             table: "Customer",
@@ -68,11 +93,17 @@ const fetchDropDownOptions = async (filter) => {
 
 function selectOptions(Option, filter) {
     selectedOption.value[filter] = Option;
-    console.log(selectedOption.value);
+}
+
+function selectFilterGroup(filterName) {
+    console.log(filterName);
+    console.log(filterGroups.value);
+    filterGroups.value.push(filterName);
 }
 
 onMounted(() => {
     document.addEventListener('click', closeDropdown);
+    InitFilterGroups();
 });
 
 onUnmounted(() => {
@@ -83,7 +114,6 @@ function closeDropdown(event) {
     for (const dropdown in domRef._rawValue) {
         if (Object.hasOwnProperty.call(domRef._rawValue, dropdown)) {
             const element = domRef._rawValue[dropdown];
-
             if (!element || element == event.target) {
                 return;
             }
@@ -97,10 +127,15 @@ function closeDropdown(event) {
 <style scoped>
 .filter-container {
     flex: 1;
+    overflow: auto;
 }
 
 .filter-container>h4 {
     margin-top: 10px;
+}
+
+.filter-container>div>h5 {
+    margin: unset !important;
 }
 
 .filter-container>div {
@@ -116,7 +151,7 @@ function closeDropdown(event) {
 }
 
 .dropdown>input {
-    width: 100%;
+    width: 95%;
     padding: 5px 0;
 }
 
@@ -149,5 +184,20 @@ ul li:hover {
 
 ul.show {
     display: block;
+}
+
+.add-group {
+    margin: unset !important;
+    position: relative;
+    display: inline-block;
+}
+
+.add-group:hover {
+    cursor: pointer;
+}
+
+.add-group>h1,
+.add-group>h4 {
+    margin: unset !important;
 }
 </style>
