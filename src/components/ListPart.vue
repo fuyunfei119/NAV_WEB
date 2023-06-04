@@ -2,23 +2,16 @@
 <template>
     <div class="container">
         <div class="inner-container">
-            <table :class="{ 'expand-table' : expand }">
+            <table :class="{ 'expand-table': expand }">
                 <thead>
                     <tr>
-                        <th 
-                            v-for="header in lineHeader" 
-                            :key="header"
-                            :class="{ 'expand-th' : expand }"
-                        >{{ header }}</th>
+                        <th v-for="header in lineHeader" :key="header" :class="{ 'expand-th': expand }">{{ header }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="item in lines" :key="item.id">
-                        <td 
-                            v-for="(value, header, index) in item" 
-                            :key="header + index"
-                            @click=" index == 0 ? openCard() : null" 
-                            >{{ value }}
+                        <td v-for="(value, header, index) in item" :key="header + index"
+                            @click=" index == 0 ? openCard() : null">{{ value }}
                         </td>
                     </tr>
                 </tbody>
@@ -64,7 +57,7 @@ const findSet = () => {
 watch(lines, (newLines) => {
     if (!isRecordLoaded.value) {
         isRecordLoaded.value = true;
-    }else {
+    } else {
         findSet();
     }
 });
@@ -100,7 +93,8 @@ table {
     border-collapse: collapse;
 }
 
-thead > tr, tbody > tr {
+thead>tr,
+tbody>tr {
     line-height: 25px;
 }
 

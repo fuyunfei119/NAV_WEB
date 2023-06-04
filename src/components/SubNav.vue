@@ -9,38 +9,38 @@
                 <a @click="() => handleDropDown(module.SALES)">Sales</a>
             </div>
             <div class="dropdown">
-                <a @click="() =>handleDropDown(module.PURCHASING)">Purchasing</a>
+                <a @click="() => handleDropDown(module.PURCHASING)">Purchasing</a>
             </div>
             <div class="dropdown">
-                <a @click="() =>handleDropDown(module.INVENTORY)">Inventory</a>
+                <a @click="() => handleDropDown(module.INVENTORY)">Inventory</a>
             </div>
             <div class="dropdown">
-                <a @click="() =>handleDropDown(module.POSTED_DOCUMENTS)">Posted Documents</a>
+                <a @click="() => handleDropDown(module.POSTED_DOCUMENTS)">Posted Documents</a>
             </div>
             <div class="dropdown">
-                <a @click="() =>handleDropDown(module.SHOPIFY)">Shopify</a>
+                <a @click="() => handleDropDown(module.SHOPIFY)">Shopify</a>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-    import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import module from '../components/types/Module'
 
-    const emits = defineEmits(['OnChangeControlBar'])
-    const router = useRouter();
+const emits = defineEmits(['OnChangeControlBar'])
+const router = useRouter();
 
-    const handleDropDown = (moduleName) => {
-        emits('OnChangeControlBar',moduleName);
-    }
+const handleDropDown = (moduleName) => {
+    emits('OnChangeControlBar', moduleName);
+}
 
-    function ReturnHome() {
-        router.push({
-            path: '/',
-            name: '/'
-        })
-    }
+function ReturnHome() {
+    router.push({
+        path: '/',
+        name: '/'
+    })
+}
 </script>
 
 <style scoped>

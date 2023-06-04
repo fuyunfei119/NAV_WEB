@@ -4,28 +4,31 @@
         <hr>
         <h4>Filter List By :</h4>
 
-        <div v-for="filter in filterGroups" :key="filter">
+        <div class="filter-group-container">
+            <div v-for="filter in filterGroups" :key="filter">
 
-            <h5>{{ filter }}</h5>
+                <h5 @click="removeFilter(filter)">{{ filter }}</h5>
 
-            <div class="dropdown">
+                <div class="dropdown">
 
-                <input type="text" @click="toggleDropdown(filter)" ref="domRef" v-model="selectedOption[filter]">
+                    <input type="text" @click="toggleDropdown(filter)" ref="domRef" v-model="selectedOption[filter]">
 
-                <ul v-if="isDropdownOpen(filter)" class="show">
-                    <li v-for="Option in dropdownOptions[filter]" :key="Option" @click="selectOptions(Option, filter)">
-                        {{ Option }}
-                    </li>
-                </ul>
-
+                    <ul v-if="isDropdownOpen(filter)" class="show">
+                        <li v-for="Option in dropdownOptions[filter]" :key="Option" @click="selectOptions(Option, filter)">
+                            {{ Option }}
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 
         <hr>
 
         <div class="add-group" @click="toggleGroupDropdown()" ref="filterGroupDropDown">
-            <h1>+</h1>
-            <h4>Add Filter</h4>
+            <div>
+                <h1>+</h1>
+                <h4>Add Filter</h4>
+            </div>
             <ul v-if="showfilterGroupDropdown" class="show">
                 <li v-for="filterName in filterGroupInit" :key="filterName" @click="selectFilterGroup(filterName)"> {{
                     filterName }}
@@ -36,8 +39,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, watch, defineEmits, defineProps } from 'vue';
 import axios from 'axios';
+
+const props = defineProps({
+    lines: Array
+});
+
+const emits = defineEmits(['OnUpdateLinesAfterAddFiters']);
 
 const filterGroupInit = ref([]);
 const filterGroups = ref([]);
@@ -95,9 +104,17 @@ function selectOptions(Option, filter) {
     selectedOption.value[filter] = Option;
 }
 
+function removeFilter(filter) {
+    const index = filterGroups.value.indexOf(filter);
+    if (index !== -1) {
+        filterGroups.value.splice(index, 1);
+    }
+    console.log(selectedOption.value);
+    delete selectedOption.value[filter];
+    console.log(selectedOption.value);
+}
+
 function selectFilterGroup(filterName) {
-    console.log(filterName);
-    console.log(filterGroups.value);
     filterGroups.value.push(filterName);
 }
 
@@ -108,6 +125,23 @@ onMounted(() => {
 
 onUnmounted(() => {
     document.removeEventListener('click', closeDropdown);
+});
+
+const FindSetByFilterConditions = async () => {
+    await axios.post('http://localhost:8080/FindSetByFilters', {
+        table: 'Customer',
+        filters: selectedOption.value
+    })
+        .then(response => {
+            emits('OnUpdateLinesAfterAddFiters', response.data);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+}
+
+watch(selectedOption.value, (newValue, oldValue) => {
+    FindSetByFilterConditions();
 });
 
 function closeDropdown(event) {
@@ -127,15 +161,18 @@ function closeDropdown(event) {
 <style scoped>
 .filter-container {
     flex: 1;
-    overflow: auto;
 }
 
 .filter-container>h4 {
     margin-top: 10px;
 }
 
-.filter-container>div>h5 {
+.filter-group-container>div>h5 {
     margin: unset !important;
+}
+
+.filter-group-container>div>h5:hover {
+    cursor: pointer;
 }
 
 .filter-container>div {
@@ -146,6 +183,7 @@ function closeDropdown(event) {
 
 .dropdown {
     margin-top: 10px;
+    margin-bottom: 10px;
     position: relative;
     display: inline-block;
 }
@@ -196,8 +234,13 @@ ul.show {
     cursor: pointer;
 }
 
-.add-group>h1,
-.add-group>h4 {
+.add-group>div {
+    display: flex;
+    align-items: center;
+}
+
+.add-group>div>h1,
+.add-group>div>h4 {
     margin: unset !important;
 }
 </style>

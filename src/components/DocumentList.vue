@@ -1,23 +1,17 @@
 <template>
     <div class="Document-List">
-        <FilterBarVue></FilterBarVue>
+        <FilterBarVue :lines="lines" @OnUpdateLinesAfterAddFiters="OnUpdateLinesAfterAddFiters"></FilterBarVue>
         <div class="documents">
             <table>
                 <thead>
                     <tr>
-                        <th 
-                            v-for="header in lineHeader" 
-                            :key="header"
-                        >{{ header }}</th>
+                        <th v-for="header in lineHeader" :key="header">{{ header }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="item in lines" :key="item.id">
-                        <td 
-                            v-for="(value, header, index) in item" 
-                            :key="header + index"
-                            @click=" index == 0 ? openCard() : null" 
-                            >{{ value }}
+                        <td v-for="(value, header, index) in item" :key="header + index"
+                            @click=" index == 0 ? openCard() : null">{{ value }}
                         </td>
                     </tr>
                 </tbody>
@@ -28,11 +22,18 @@
 
 <script setup>
 import FilterBarVue from './FilterBar.vue';
+import { defineProps, defineEmits } from 'vue';
 
 const props = defineProps({
     lines: Array,
     lineHeader: Object
 });
+
+const emits = defineEmits(['OnUpdateLinesAfterAddFiters']);
+
+function OnUpdateLinesAfterAddFiters(lineAfterSetFilters) {
+    emits('OnUpdateLinesAfterAddFiters', lineAfterSetFilters);
+}
 
 </script>
 
@@ -55,17 +56,17 @@ const props = defineProps({
     width: 100%;
 }
 
-.documents > table {
+.documents>table {
     padding: 2% 2%;
     border-collapse: collapse;
 }
 
-tbody > tr:hover {
+tbody>tr:hover {
     background-color: var(--Accent);
     color: aliceblue;
 }
 
-tbody > tr {
+tbody>tr {
     line-height: 25px;
 }
 

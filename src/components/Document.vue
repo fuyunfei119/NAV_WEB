@@ -1,15 +1,13 @@
 <template>
     <div class="document-container">
         <DocumentHeader></DocumentHeader>
-        <DocumentList 
-            :lines="lines"
-            :lineHeader="lineHeader"
-        ></DocumentList>
+        <DocumentList :lines="lines" :lineHeader="lineHeader" @OnUpdateLinesAfterAddFiters="OnUpdateLinesAfterAddFiters">
+        </DocumentList>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 import DocumentHeader from './DocumentHeader.vue';
 import DocumentList from './DocumentList.vue';
 import axios from 'axios';
@@ -23,7 +21,10 @@ const url = 'http://localhost:8080/?table=' + tableName;
 
 const lines = ref([]);
 const lineHeader = ref({});
-const isRecordLoaded = ref(false);
+
+function OnUpdateLinesAfterAddFiters(lineAfterSetFilters) {
+    lines.value = lineAfterSetFilters;
+}
 
 const findSet = () => {
     axios.get(url)
@@ -35,14 +36,6 @@ const findSet = () => {
             console.log(error);
         });
 }
-
-watch(lines, (newLines) => {
-    if (!isRecordLoaded.value) {
-        isRecordLoaded.value = true;
-    }else {
-        findSet();
-    }
-});
 
 onMounted(async () => {
     findSet();
