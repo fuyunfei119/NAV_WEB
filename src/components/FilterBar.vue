@@ -10,10 +10,11 @@
 
             <div class="dropdown">
 
-                <input type="text" @click="toggleDropdown(filter)" ref="domRef" v-model="selectedOption">
+                <input type="text" @click="toggleDropdown(filter)" ref="domRef" v-model="selectedOption[filter]">
 
                 <ul v-if="isDropdownOpen(filter)" class="show">
-                    <li v-for="Option in dropdownOptions" :key="Option" @click="selectOptions(Option, filter)"> {{ Option }}
+                    <li v-for="Option in dropdownOptions[filter]" :key="Option" @click="selectOptions(Option, filter)"> {{
+                        Option }}
                     </li>
                 </ul>
 
@@ -24,12 +25,13 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
+import axios from 'axios';
 
 // const filterGroups = ref([]);
 // const filterGroups = ['user_id', 'first_name'];
 const filterGroups = ['Group 1', 'Group 2', 'Group 3'];
-const dropdownOptions = ['Option 1', 'Option 2', 'Option 3', 'Option 3 Lorem ipsum dolor sit amet consectetur adipisicing elit.']
-const selectedOption = ref([]);
+const dropdownOptions = ref({});
+const selectedOption = ref({});
 const filterConditions = ref({});
 
 const openDropdowns = ref([]);
@@ -39,6 +41,7 @@ function toggleDropdown(filter) {
     const index = openDropdowns.value.indexOf(filter);
     if (index === -1) {
         openDropdowns.value.push(filter);
+        fetchDropDownOptions(filter);
     } else {
         openDropdowns.value.splice(index, 1);
     }
@@ -48,10 +51,24 @@ function isDropdownOpen(filter) {
     return openDropdowns.value.includes(filter);
 }
 
-function selectOptions(Option, filter) {
-    console.log(filter, Option);
-    selectedOption.value = [...selectedOption.value, Option];
+const fetchDropDownOptions = async (filter) => {
 
+    console.log(filter);
+
+    try {
+        const response = await axios.post(`http://localhost:8080/getfilterOptions`, {
+            table: "Customer",
+            filterName: filter
+        });
+        dropdownOptions.value[filter] = response.data;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+function selectOptions(Option, filter) {
+    selectedOption.value[filter] = Option;
+    console.log(selectedOption.value);
 }
 
 onMounted(() => {
