@@ -1,6 +1,7 @@
 <template>
     <div class="Document-List">
-        <FilterBarVue :lines="lines" @OnUpdateLinesAfterAddFiters="OnUpdateLinesAfterAddFiters"></FilterBarVue>
+        <FilterBarVue :class="ToggleFilterBar()" :lines="lines" @OnUpdateLinesAfterAddFiters="OnUpdateLinesAfterAddFiters">
+        </FilterBarVue>
         <div class="documents">
             <table>
                 <thead>
@@ -22,7 +23,7 @@
 
 <script setup>
 import FilterBarVue from './FilterBar.vue';
-import { defineProps, defineEmits } from 'vue';
+import { defineProps, defineEmits, defineExpose } from 'vue';
 
 const props = defineProps({
     lines: Array,
@@ -35,6 +36,19 @@ function OnUpdateLinesAfterAddFiters(lineAfterSetFilters) {
     emits('OnUpdateLinesAfterAddFiters', lineAfterSetFilters);
 }
 
+let filterBarVisible = true;
+
+function ToggleFilterBar() {
+    return filterBarVisible ? '' : 'hidden';
+}
+
+function OnToggleFilterBar() {
+    filterBarVisible = !filterBarVisible;
+}
+
+defineExpose({
+    OnToggleFilterBar
+})
 </script>
 
 <style scoped>
@@ -85,5 +99,9 @@ th {
     text-align: left;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+.hidden {
+    display: none;
 }
 </style>

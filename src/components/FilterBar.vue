@@ -30,8 +30,8 @@
                 <h4>Add Filter</h4>
             </div>
             <ul v-if="showfilterGroupDropdown" class="show">
-                <li v-for="filterName in filterGroupInit" :key="filterName" @click="selectFilterGroup(filterName)"> {{
-                    filterName }}
+                <li v-for="filterName in filterGroupInit" :key="filterName" @click="selectFilterGroup(filterName)">
+                    {{ filterName }}
                 </li>
             </ul>
         </div>
@@ -109,9 +109,7 @@ function removeFilter(filter) {
     if (index !== -1) {
         filterGroups.value.splice(index, 1);
     }
-    console.log(selectedOption.value);
     delete selectedOption.value[filter];
-    console.log(selectedOption.value);
 }
 
 function selectFilterGroup(filterName) {

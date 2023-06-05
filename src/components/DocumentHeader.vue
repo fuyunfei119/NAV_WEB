@@ -8,6 +8,9 @@
             <a href="">Search</a>
         </div>
 
+        <a @click="openFilterBar()">
+            <h4>Filter</h4>
+        </a>
         <a class="back-button" @click="goback()">
             <h4>Back</h4>
         </a>

@@ -1,7 +1,8 @@
 <template>
     <div class="document-container">
-        <DocumentHeader></DocumentHeader>
-        <DocumentList :lines="lines" :lineHeader="lineHeader" @OnUpdateLinesAfterAddFiters="OnUpdateLinesAfterAddFiters">
+        <DocumentHeader @OnToggleFilterBar="OnToggleFilterBar"></DocumentHeader>
+        <DocumentList :lines="lines" :lineHeader="lineHeader" @OnUpdateLinesAfterAddFiters="OnUpdateLinesAfterAddFiters"
+            ref="DocumentListRef">
         </DocumentList>
     </div>
 </template>
@@ -21,6 +22,12 @@ const url = 'http://localhost:8080/?table=' + tableName;
 
 const lines = ref([]);
 const lineHeader = ref({});
+
+const DocumentListRef = ref();
+
+function OnToggleFilterBar() {
+    DocumentListRef.value.OnToggleFilterBar();
+}
 
 function OnUpdateLinesAfterAddFiters(lineAfterSetFilters) {
     lines.value = lineAfterSetFilters;
