@@ -20,6 +20,12 @@
 <script setup>
 import router from '@/router';
 
+const emits = defineEmits(['OnToggleFilterBar']);
+
+function openFilterBar() {
+    emits('OnToggleFilterBar');
+}
+
 const goback = () => {
     router.go(-1);
 }
