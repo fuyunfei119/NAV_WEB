@@ -89,15 +89,16 @@ function isDropdownOpen(filter) {
 }
 
 const fetchDropDownOptions = async (filter) => {
-    try {
-        const response = await axios.post(`http://localhost:8080/getfilterOptions`, {
+    await axios.post(`http://localhost:8080/getfilterOptions`, {
             table: "Customer",
             filterName: filter
+        })
+            .then(response => {
+                dropdownOptions.value[filter] = response.data;
+            })
+            .catch(error => {
+            console.log(error);
         });
-        dropdownOptions.value[filter] = response.data;
-    } catch (error) {
-        console.error(error);
-    }
 };
 
 function selectOptions(Option, filter) {
