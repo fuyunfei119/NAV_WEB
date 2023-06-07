@@ -40,6 +40,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, watch, defineEmits, defineProps } from 'vue';
+import { debounce } from 'lodash';
 import axios from 'axios';
 
 const props = defineProps({
@@ -126,7 +127,7 @@ onUnmounted(() => {
     document.removeEventListener('click', closeDropdown);
 });
 
-const FindSetByFilterConditions = async () => {
+const FindSetByFilterConditions = debounce(async () => {
     await axios.post('http://localhost:8080/FindSetByFilters', {
         table: 'Customer',
         filters: selectedOption.value
@@ -137,10 +138,11 @@ const FindSetByFilterConditions = async () => {
         .catch(error => {
             console.log(error);
         });
-}
+},300);
 
 watch(selectedOption.value, (newValue, oldValue) => {
-    FindSetByFilterConditions();
+    console.log(domRef.value);
+        FindSetByFilterConditions();
 });
 
 function closeDropdown(event) {
