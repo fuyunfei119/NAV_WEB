@@ -103,7 +103,12 @@ const fetchDropDownOptions = async (filter) => {
 };
 
 function selectOptions(Option, filter) {
-    selectedOption.value[filter] = Option;
+    if (selectedOption.value[filter] !== undefined) {
+        selectedOption.value[filter] += Option;
+    } else {
+        selectedOption.value[filter] = Option;
+    }
+    console.log(selectedOption.value);
 }
 
 function removeFilter(filter) {
@@ -141,8 +146,8 @@ const FindSetByFilterConditions = debounce(async () => {
 },300);
 
 watch(selectedOption.value, (newValue, oldValue) => {
-    console.log(domRef.value);
-        FindSetByFilterConditions();
+    console.log(selectedOption.value);
+    FindSetByFilterConditions();
 });
 
 function closeDropdown(event) {
