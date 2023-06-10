@@ -103,7 +103,7 @@ const fetchDropDownOptions = async (filter) => {
 };
 
 function selectOptions(Option, filter) {
-    if (selectedOption.value[filter] !== undefined) {
+    if (selectedOption.value[filter] !== undefined && (selectedOption.value[filter].toString().endsWith("|") || selectedOption.value[filter].toString().endsWith("&"))) {
         selectedOption.value[filter] += Option;
     } else {
         selectedOption.value[filter] = Option;
