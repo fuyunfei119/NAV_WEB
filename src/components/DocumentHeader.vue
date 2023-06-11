@@ -5,7 +5,7 @@
         </div>
 
         <div class="right">
-            <a href="">Search</a>
+            <input type="text" placeholder="Search" v-model="SearchContent">
         </div>
 
         <a @click="openFilterBar()">
@@ -19,12 +19,34 @@
 
 <script setup>
 import router from '@/router';
+import { ref, watch } from 'vue';
+import { debounce } from 'lodash';
+import axios from 'axios';
 
 const emits = defineEmits(['OnToggleFilterBar']);
 
 function openFilterBar() {
     emits('OnToggleFilterBar');
 }
+
+const SearchContent = ref(null);
+
+const QueryWithSearchContent = debounce(async () => {
+    await axios.post('http://localhost:8080/FetchSearchQuery', {
+        table: 'Customer',
+        content: SearchContent.value
+    })
+        .then(response => {
+            emits('OnUpdateLinesAfterAddFiters', response.data);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+}, 300);
+
+watch(SearchContent, (newValue, oldValue) => {
+    QueryWithSearchContent();
+});
 
 const goback = () => {
     router.go(-1);
@@ -50,13 +72,16 @@ header {
     align-items: center;
 }
 
-.right>a {
-    margin-right: 20px;
+.right>input {
+    padding: 5px;
+    font-size: medium;
 }
 
-.back-button {
-    flex: 1;
-    display: flex;
-    justify-content: flex-end;
+.show {
+    display: block;
+}
+
+.hidden {
+    display: none;
 }
 </style>

@@ -91,13 +91,13 @@ function isDropdownOpen(filter) {
 
 const fetchDropDownOptions = async (filter) => {
     await axios.post(`http://localhost:8080/getfilterOptions`, {
-            table: "Customer",
-            filterName: filter
+        table: "Customer",
+        filterName: filter
+    })
+        .then(response => {
+            dropdownOptions.value[filter] = response.data;
         })
-            .then(response => {
-                dropdownOptions.value[filter] = response.data;
-            })
-            .catch(error => {
+        .catch(error => {
             console.log(error);
         });
 };
@@ -144,7 +144,7 @@ const FindSetByFilterConditions = debounce(async () => {
         .catch(error => {
             console.log(error);
         });
-},300);
+}, 300);
 
 watch(selectedOption.value, (newValue, oldValue) => {
     FindSetByFilterConditions();
