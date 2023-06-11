@@ -1,7 +1,13 @@
 <template>
     <div class="document-container">
-        <DocumentHeader @OnToggleFilterBar="OnToggleFilterBar"></DocumentHeader>
-        <DocumentList :lines="lines" :lineHeader="lineHeader" @OnUpdateLinesAfterAddFiters="OnUpdateLinesAfterAddFiters"
+        <DocumentHeader 
+            @OnToggleFilterBar="OnToggleFilterBar"
+            @OnUpdateLinesAfterQuerySearch="OnUpdateLinesAfterQuerySearch"
+        ></DocumentHeader>
+        <DocumentList 
+            :lines="lines" 
+            :lineHeader="lineHeader" 
+            @OnUpdateLinesAfterAddFiters="OnUpdateLinesAfterAddFiters"
             ref="DocumentListRef">
         </DocumentList>
     </div>
@@ -27,6 +33,10 @@ const DocumentListRef = ref();
 
 function OnToggleFilterBar() {
     DocumentListRef.value.OnToggleFilterBar();
+}
+
+function OnUpdateLinesAfterQuerySearch(lineAfterQuerySearch) {
+    lines.value = lineAfterQuerySearch;
 }
 
 function OnUpdateLinesAfterAddFiters(lineAfterSetFilters) {

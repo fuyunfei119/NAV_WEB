@@ -19,11 +19,11 @@
 
 <script setup>
 import router from '@/router';
-import { ref, watch } from 'vue';
+import { ref, watch, defineEmits } from 'vue';
 import { debounce } from 'lodash';
 import axios from 'axios';
 
-const emits = defineEmits(['OnToggleFilterBar']);
+const emits = defineEmits(['OnToggleFilterBar','OnUpdateLinesAfterQuerySearch']);
 
 function openFilterBar() {
     emits('OnToggleFilterBar');
@@ -37,7 +37,7 @@ const QueryWithSearchContent = debounce(async () => {
         content: SearchContent.value
     })
         .then(response => {
-            emits('OnUpdateLinesAfterAddFiters', response.data);
+            emits('OnUpdateLinesAfterQuerySearch', response.data);
         })
         .catch(error => {
             console.log(error);
