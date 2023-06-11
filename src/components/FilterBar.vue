@@ -108,6 +108,7 @@ function selectOptions(Option, filter) {
     } else {
         selectedOption.value[filter] = Option;
     }
+    console.log(typeof selectedOption.value[filter]);
     console.log(selectedOption.value);
 }
 
@@ -146,7 +147,6 @@ const FindSetByFilterConditions = debounce(async () => {
 },300);
 
 watch(selectedOption.value, (newValue, oldValue) => {
-    console.log(selectedOption.value);
     FindSetByFilterConditions();
 });
 
