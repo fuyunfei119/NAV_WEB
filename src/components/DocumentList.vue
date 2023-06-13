@@ -1,18 +1,30 @@
 <template>
     <div class="Document-List">
-        <FilterBarVue :class="filterBarVisible ? 'show' : 'hidden'" :lines="lines" @OnUpdateLinesAfterAddFiters="OnUpdateLinesAfterAddFiters">
+        <FilterBarVue :class="filterBarVisible ? 'show' : 'hidden'" :lines="lines"
+            @OnUpdateLinesAfterAddFiters="OnUpdateLinesAfterAddFiters">
         </FilterBarVue>
         <div class="documents">
             <table>
                 <thead>
                     <tr>
-                        <th v-for="header in lineHeader" :key="header">{{ header }}</th>
+                        <th ref="domRef" v-for="(header, index) in lineHeader" :key="header"
+                            @click="ToggleLineHeaderDropDown(header, index)">
+                            {{ header }}
+                        </th>
+
+                        <ul ref="dropdownRef" v-if="showGroupDropdown" :style="{display: 'block !important',position: 'absolute',left: leftPadding}" :key="header">
+                            <li>Ascending</li>
+                            <li>Descending</li>
+                            <li>Add Filter</li>
+                            <li>Filter to this Value</li>
+                            <li>Clear Filter</li>
+                        </ul>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="item in lines" :key="item.id">
-                        <td v-for="(value, header, index) in item" :key="header + index"
-                            @click=" index == 0 ? openCard() : null">{{ value }}
+                        <td v-for="(value, header, index) in item" :key="header + index">
+                            {{ value }}
                         </td>
                     </tr>
                 </tbody>
@@ -37,10 +49,27 @@ function OnUpdateLinesAfterAddFiters(lineAfterSetFilters) {
 }
 
 const filterBarVisible = ref(false);
+const showGroupDropdown = ref(false);
+const leftPadding = ref('');
+
+const domRef = ref();
+const dropdownRef = ref();
 
 function OnToggleFilterBar() {
     filterBarVisible.value = !filterBarVisible.value;
 }
+
+function ToggleLineHeaderDropDown(header, index) {
+    showGroupDropdown.value = !showGroupDropdown.value;
+
+    if (showGroupDropdown) {
+        const rect = domRef.value[index].getBoundingClientRect();
+        leftPadding.value = rect.left + 'px';
+        console.log(leftPadding.value);
+    }
+
+}
+
 
 defineExpose({
     OnToggleFilterBar
@@ -80,12 +109,17 @@ tbody>tr {
     line-height: 25px;
 }
 
+tr {
+    cursor: default;
+}
+
 th {
     cursor: pointer;
 }
 
 th:hover {
     border-bottom: 1px dotted var(--Accent);
+    cursor: pointer;
 }
 
 td,
@@ -95,6 +129,31 @@ th {
     text-align: left;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+ul {
+    position: absolute;
+    left: 0;
+    display: none;
+    background-color: #f9f9f9;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    border: 1px solid #ddd;
+    max-width: 1000px;
+    max-height: 500px;
+    z-index: 999;
+    overflow: auto;
+}
+
+ul li {
+    padding: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+ul li:hover {
+    background-color: var(--Accent);
 }
 
 .hidden {
