@@ -1,6 +1,6 @@
 <template>
     <div class="Document-List">
-        <FilterBarVue :class="filterBarVisible ? 'show' : 'hidden'" :lines="lines"
+        <FilterBarVue ref="FilterBarVueRef" :class="filterBarVisible ? 'show' : 'hidden'" :lines="lines"
             @OnUpdateLinesAfterAddFiters="OnUpdateLinesAfterAddFiters">
         </FilterBarVue>
         <div class="documents">
@@ -8,13 +8,14 @@
                 <thead>
                     <tr>
                         <th ref="domRef" v-for="(header, index) in lineHeader" :key="header"
-                            @click="ToggleLineHeaderDropDown(header, index)">
+                            @click="ToggleLineHeaderDropDown(index)">
                             {{ header }}
                         </th>
 
-                        <ul ref="dropdownRef" v-if="showGroupDropdown" :style="{display: 'block !important',position: 'absolute',left: leftPadding}" :key="header">
-                            <li>Ascending</li>
-                            <li>Descending</li>
+                        <ul v-if="showGroupDropdown"
+                            :style="{ display: 'block !important', position: 'absolute', left: leftPadding }">
+                            <li @click="SortLinesByAscending()">Ascending</li>
+                            <li @click="SortLinesByDescending()" >Descending</li>
                             <li>Add Filter</li>
                             <li>Filter to this Value</li>
                             <li>Clear Filter</li>
@@ -35,7 +36,8 @@
 
 <script setup>
 import FilterBarVue from './FilterBar.vue';
-import { defineProps, defineEmits, defineExpose, ref } from 'vue';
+import { defineProps, defineEmits, defineExpose, ref,computed, watch } from 'vue';
+import axios from 'axios';
 
 const props = defineProps({
     lines: Array,
@@ -50,26 +52,85 @@ function OnUpdateLinesAfterAddFiters(lineAfterSetFilters) {
 
 const filterBarVisible = ref(false);
 const showGroupDropdown = ref(false);
+const lastSelectedDropDown = ref(null);
+const currentIndex = ref(null);
+
+const sortingGroups = computed(() => 
+  Object.keys(props.lineHeader).map(key => ({
+    field: props.lineHeader[key],
+    sort: 'Asc'
+  }))
+);
+
 const leftPadding = ref('');
 
 const domRef = ref();
-const dropdownRef = ref();
+const FilterBarVueRef = ref();
 
 function OnToggleFilterBar() {
     filterBarVisible.value = !filterBarVisible.value;
 }
 
-function ToggleLineHeaderDropDown(header, index) {
-    showGroupDropdown.value = !showGroupDropdown.value;
+function ToggleLineHeaderDropDown(index) {
 
-    if (showGroupDropdown) {
+    if (lastSelectedDropDown.value === index) {
+        showGroupDropdown.value = !showGroupDropdown.value;
+    }
+    else {
+        if (!showGroupDropdown.value) {
+            showGroupDropdown.value = !showGroupDropdown.value;
+        }
         const rect = domRef.value[index].getBoundingClientRect();
         leftPadding.value = rect.left + 'px';
-        console.log(leftPadding.value);
     }
 
+    currentIndex.value = index;
+    lastSelectedDropDown.value = index;
 }
 
+const SortLinesByAscending = async () => {
+
+    if (sortingGroups.value[currentIndex.value].sort === 'Asc') return;
+
+    sortingGroups.value[currentIndex.value].sort = 'Asc';
+
+    console.log(sortingGroups.value);
+    console.log(FilterBarVueRef.value.selectedOption);
+
+    await axios.post('http://localhost:8080/SortLinesByAscending', {
+        table: 'Customer',
+        filters : FilterBarVueRef.value.selectedOption,
+        sort : sortingGroups.value
+    })
+        .then(response => {
+            
+        })
+        .catch(error => {
+            console.log(error);
+        });
+}
+
+const SortLinesByDescending = async () => {
+
+    if (sortingGroups.value[currentIndex.value].sort === 'Desc') return;
+
+    sortingGroups.value[currentIndex.value].sort = 'Desc';
+
+    console.log(sortingGroups.value);
+    console.log(FilterBarVueRef.value.selectedOption);
+
+    await axios.post('http://localhost:8080/SortLinesByDescending', {
+        table: 'Customer',
+        filters : FilterBarVueRef.value.selectedOption,
+        sort : sortingGroups.value
+    })
+        .then(response => {
+            
+        })
+        .catch(error => {
+            console.log(error);
+        });
+}
 
 defineExpose({
     OnToggleFilterBar

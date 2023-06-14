@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, defineEmits, defineProps } from 'vue';
+import { ref, onMounted, onUnmounted, watch, defineEmits, defineProps, defineExpose } from 'vue';
 import { debounce } from 'lodash';
 import axios from 'axios';
 
@@ -162,6 +162,10 @@ function closeDropdown(event) {
 
     openDropdowns.value = [];
 }
+
+defineExpose({
+    selectedOption
+})
 </script>
 
 <style scoped>
