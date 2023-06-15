@@ -97,7 +97,7 @@ const SortLinesByAscending = async () => {
     console.log(sortingGroups.value);
     console.log(FilterBarVueRef.value.selectedOption);
 
-    await axios.post('http://localhost:8080/SortLinesByAscending', {
+    await axios.post('http://localhost:8080/SortLines', {
         table: 'Customer',
         filters : FilterBarVueRef.value.selectedOption,
         sort : sortingGroups.value
@@ -119,7 +119,7 @@ const SortLinesByDescending = async () => {
     console.log(sortingGroups.value);
     console.log(FilterBarVueRef.value.selectedOption);
 
-    await axios.post('http://localhost:8080/SortLinesByDescending', {
+    await axios.post('http://localhost:8080/SortLines', {
         table: 'Customer',
         filters : FilterBarVueRef.value.selectedOption,
         sort : sortingGroups.value
