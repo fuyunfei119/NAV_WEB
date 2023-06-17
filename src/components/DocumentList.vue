@@ -9,7 +9,11 @@
                     <tr>
                         <th ref="domRef" v-for="(header, index) in lineHeader" :key="header"
                             @click="ToggleLineHeaderDropDown(index)">
-                            {{ header }}
+                            <div>
+                                <h3 :class="sortingGroups[index].sort === 'Asc' ? 'show' : 'hidden'" >&uarr;</h3>
+                                <h3 :class="sortingGroups[index].sort === 'Desc' ? 'show' : 'hidden'">&darr;</h3>
+                                {{ header }}
+                            </div>
                         </th>
 
                         <ul v-if="showGroupDropdown"
@@ -50,15 +54,21 @@ function OnUpdateLinesAfterAddFiters(lineAfterSetFilters) {
     emits('OnUpdateLinesAfterAddFiters', lineAfterSetFilters);
 }
 
+function OnUpdateLinesAfterSortLines(lineAfterSortLines) {
+    emits('OnUpdateLinesAfterAddFiters',lineAfterSortLines);
+}
+
 const filterBarVisible = ref(false);
 const showGroupDropdown = ref(false);
 const lastSelectedDropDown = ref(null);
 const currentIndex = ref(null);
+const showUpArrow = ref(false);
+const showDownArrow = ref(false);
 
 const sortingGroups = computed(() => 
   Object.keys(props.lineHeader).map(key => ({
     field: props.lineHeader[key],
-    sort: 'Asc'
+    sort: ''
   }))
 );
 
@@ -92,44 +102,54 @@ const SortLinesByAscending = async () => {
 
     if (sortingGroups.value[currentIndex.value].sort === 'Asc') return;
 
-    sortingGroups.value[currentIndex.value].sort = 'Asc';
+    sortingGroups.value.forEach(key => {
+        key['sort'] = '';
+    });
 
-    console.log(sortingGroups.value);
-    console.log(FilterBarVueRef.value.selectedOption);
+    sortingGroups.value[currentIndex.value].sort = 'Asc';
 
     await axios.post('http://localhost:8080/SortLines', {
         table: 'Customer',
         filters : FilterBarVueRef.value.selectedOption,
-        sort : sortingGroups.value
+        sort : sortingGroups.value[currentIndex.value]
     })
         .then(response => {
-            
+            OnUpdateLinesAfterSortLines(response.data);
         })
         .catch(error => {
             console.log(error);
         });
+    
+    showUpArrow.value = true;
+    showDownArrow.value = false;
+    showGroupDropdown.value = !showGroupDropdown.value;
 }
 
 const SortLinesByDescending = async () => {
 
     if (sortingGroups.value[currentIndex.value].sort === 'Desc') return;
 
-    sortingGroups.value[currentIndex.value].sort = 'Desc';
+    sortingGroups.value.forEach(key => {
+        key['sort'] = '';
+    });
 
-    console.log(sortingGroups.value);
-    console.log(FilterBarVueRef.value.selectedOption);
+    sortingGroups.value[currentIndex.value].sort = 'Desc';
 
     await axios.post('http://localhost:8080/SortLines', {
         table: 'Customer',
         filters : FilterBarVueRef.value.selectedOption,
-        sort : sortingGroups.value
+        sort : sortingGroups.value[currentIndex.value]
     })
         .then(response => {
-            
+            OnUpdateLinesAfterSortLines(response.data);
         })
         .catch(error => {
             console.log(error);
         });
+    
+    showDownArrow.value = true;
+    showUpArrow.value = false;
+    showGroupDropdown.value = !showGroupDropdown.value;
 }
 
 defineExpose({
@@ -190,6 +210,11 @@ th {
     text-align: left;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+th > div {
+    display: flex;
+    align-items: center;
 }
 
 ul {
