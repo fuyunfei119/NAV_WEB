@@ -33,17 +33,20 @@ const lineHeader = ref({});
 const isRecordLoaded = ref(false);
 
 const router = useRouter();
-const openCard = () => {
+const openCard = (RecordID) => {
     router.push(
         {
             path: '/card',
             name: 'card',
-            component: Card
+            component: Card,
+            params: {
+                recordId: RecordID
+            }
         },
     )
 }
 
-const findSet = () => {
+const findSet = async () => {
     axios.get('http://localhost:8080/FindSet')
         .then(response => {
             lines.value = response.data;
@@ -120,13 +123,14 @@ th {
 }
 
 .expand-th {
-    min-width: 200px;
+    min-width: 25%;
 }
 
 .expand-table {
-    width: unset;
+    width: 100%;
     display: table;
-    table-layout: fixed;
+    /*table-layout: fixed;*/
+    table-layout: auto;
     text-align: left;
     border-collapse: collapse;
 }

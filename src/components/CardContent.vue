@@ -1,6 +1,9 @@
 <template>
     <div class="card-content">
-        <CardFields :fields="general"></CardFields>
+        <div>
+            <CardFields :fields="general"></CardFields>
+        </div>
+
         <SubPageLines></SubPageLines>
         <hr>
         <CardFields :fields="invoice"></CardFields>
@@ -9,9 +12,31 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref,onMounted, defineProps } from 'vue';
 import CardFields from '../components/CardFields.vue'
 import SubPageLines from '../components/SubPageLines.vue'
+
+import axios from 'axios';
+
+const props = defineProps({
+    RecordID: String
+})
+
+const GetRecordById = async () => {
+
+    console.log(props.RecordID);
+
+    axios.post('http://localhost:8080/GetRecordById',{
+        table: 'Customer',
+        RecordID: props.RecordID
+    })
+        .then(response => {
+
+        })
+        .catch(error => {
+            console.log(error);
+        });
+}
 
 const general = ref({
     "GroupName": "General",
@@ -45,6 +70,10 @@ const shipping = ref({
         { "Location Code": "A" },
         { "Bill-to": "Customer Address" },
     ]
+})
+
+onMounted(async () => {
+    GetRecordById();
 })
 </script>
 
