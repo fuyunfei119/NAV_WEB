@@ -1,14 +1,14 @@
 <template>
     <section>
-        <h3>{{ groupName }}</h3>
+        <h3>{{ groupName.value }}</h3>
 
         <hr>
 
         <div class="content">
-            <div class="item" v-for="(item, index) in allfields" :key="index">
-                <h5>{{ getFieldName(item) }}</h5>
+            <div class="item" v-for="(item, index) in allFields.value" :key="index">
+                <h4>{{ index }}</h4>
                 <hr>
-                <input type="text" :value="Object.values(item)">
+                <input type="text" :value="item">
             </div>
         </div>
 
@@ -16,21 +16,25 @@
 </template>
 
 <script setup>
+import { onMounted,computed, ref } from 'vue';
 
 const props = defineProps({
-    fields: Array
+    fields: Object
 })
 
-const groupName = props.fields.GroupName;
-const allfields = props.fields.Fields;
+const groupName = computed(() => ref(props.fields.groupName));
+const allFields = computed(() => ref(props.fields.fields));
 
-const getFieldName = (item) => Object.keys(item).at(0);
+const getFieldName = (item) => {
+    console.log(allFields.value.value);
+    console.log(item);
+}
 
 </script>
 
 <style scoped>
 h3,
-h5 {
+h4 {
     margin: unset;
 }
 
@@ -48,7 +52,7 @@ h5 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0% 2% 2% 0%;
+    padding: 0% 2% 1% 0%;
     line-height: 28px;
 }
 

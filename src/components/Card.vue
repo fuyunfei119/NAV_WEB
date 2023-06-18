@@ -3,7 +3,7 @@
     <div class="container-Card">
         <CardHeaderBar></CardHeaderBar>
         <CardControlBar></CardControlBar>
-        <CardContent :RecordID="route.query.Id"></CardContent>
+        <CardContent :newEntity="route.query.newEntity" :RecordID="route.query.Id"></CardContent>
     </div>
 </template>
 

@@ -1,19 +1,10 @@
 <template>
     <div class="card-content">
-        <div>
-            <CardFields :fields="general"></CardFields>
+        <div v-for="field in fields">
+            <CardFields :fields="field" ></CardFields>
         </div>
 
         <SubPageLines></SubPageLines>
-        <hr>
-        <div>
-            <CardFields :fields="invoice"></CardFields>
-        </div>
-
-        <div>
-            <CardFields :fields="shipping"></CardFields>
-        </div>
-
     </div>
 </template>
 
@@ -25,8 +16,11 @@ import SubPageLines from '../components/SubPageLines.vue'
 import axios from 'axios';
 
 const props = defineProps({
-    RecordID: String
+    RecordID: String,
+    newEntity: Boolean
 })
+
+const fields = ref([]);
 
 const GetRecordById = async (RecordID) => {
 
@@ -35,48 +29,29 @@ const GetRecordById = async (RecordID) => {
         RecordID: RecordID
     })
         .then(response => {
-            console.log(response.data);
+            fields.value = response.data;
         })
         .catch(error => {
             console.log(error);
         });
 }
 
-const general = ref({
-    "GroupName": "General",
-    "Fields":
-        [
-            { "Customer Name": "Hamburg Software AG" },
-            { "Customer No.": "10100" },
-            { "Address": "Lange Str. 10-15" },
-            { "Address": "Lange Str. 10-15" },
-            { "Address": "Lange Str. 10-15" },
-        ]
-})
+const InitNewRecord = async () => {
 
-const invoice = ref({
-    "GroupName": "Invoice Details",
-    "Fields":
-        [
-            { "Currency Code": "EU" },
-            { "VAT Bus. Posting Group": "INLAND" },
-            { "Customer Posting Group": "INLAND" },
-            { "Payment Terms Code": "BBL" },
-        ]
-})
-
-const shipping = ref({
-    "GroupName": "Invoice Details",
-    "Fields": [
-        { "Ship-to": "Customer Address" },
-        { "Contact": "Frau Claudia" },
-        { "Shipment Date": "1/9/2025" },
-        { "Location Code": "A" },
-        { "Bill-to": "Customer Address" },
-    ]
-})
+    axios.post('http://localhost:8080/InitNewRecord', {
+        table: 'Customer'
+    })
+        .then(response => {
+            
+        })
+        .catch(error => {
+            console.log(error);
+        });
+}
 
 onMounted(async () => {
+    if (props.newEntity) return InitNewRecord();
+
     GetRecordById(props.RecordID);
 })
 </script>

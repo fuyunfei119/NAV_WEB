@@ -32,16 +32,7 @@ const ButtonsOfDefault = [
     },
     {
         "ControlName": "Home"
-    },
-    // {
-    //     "ControlName": "Customer"
-    // },
-    // {
-    //     "ControlName": "New Document"
-    // },
-    // {
-    //     "ControlName": "Prices"
-    // }
+    }
 ]
 const ButtonsOfSales = [
     {
@@ -164,7 +155,10 @@ const HandlePageAction = (ControlName) => {
             router.push({
                 path: '/card',
                 name: 'card',
-                component: Card
+                component: Card,
+                query: {
+                    newEntity: true
+                }
             })
             break;
         default:
