@@ -6,13 +6,19 @@
 
         <SubPageLines></SubPageLines>
         <hr>
-        <CardFields :fields="invoice"></CardFields>
-        <CardFields :fields="shipping"></CardFields>
+        <div>
+            <CardFields :fields="invoice"></CardFields>
+        </div>
+
+        <div>
+            <CardFields :fields="shipping"></CardFields>
+        </div>
+
     </div>
 </template>
 
 <script setup>
-import { ref,onMounted, defineProps } from 'vue';
+import { ref, onMounted, defineProps } from 'vue';
 import CardFields from '../components/CardFields.vue'
 import SubPageLines from '../components/SubPageLines.vue'
 
@@ -22,16 +28,14 @@ const props = defineProps({
     RecordID: String
 })
 
-const GetRecordById = async () => {
+const GetRecordById = async (RecordID) => {
 
-    console.log(props.RecordID);
-
-    axios.post('http://localhost:8080/GetRecordById',{
+    axios.post('http://localhost:8080/GetRecordById', {
         table: 'Customer',
-        RecordID: props.RecordID
+        RecordID: RecordID
     })
         .then(response => {
-
+            console.log(response.data);
         })
         .catch(error => {
             console.log(error);
@@ -73,7 +77,7 @@ const shipping = ref({
 })
 
 onMounted(async () => {
-    GetRecordById();
+    GetRecordById(props.RecordID);
 })
 </script>
 

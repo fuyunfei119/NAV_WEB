@@ -11,7 +11,7 @@
                 <tbody>
                     <tr v-for="item in lines" :key="item.id">
                         <td v-for="(value, header, index) in item" :key="header + index"
-                            @click=" index == 0 ? openCard() : null">{{ value }}
+                            @click=" index == 0 ? openCard(value) : null">{{ value }}
                         </td>
                     </tr>
                 </tbody>
@@ -39,9 +39,9 @@ const openCard = (RecordID) => {
             path: '/card',
             name: 'card',
             component: Card,
-            params: {
-                recordId: RecordID
-            }
+            query: {
+                Id: RecordID
+            },
         },
     )
 }

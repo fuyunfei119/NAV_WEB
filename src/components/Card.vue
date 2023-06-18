@@ -3,7 +3,7 @@
     <div class="container-Card">
         <CardHeaderBar></CardHeaderBar>
         <CardControlBar></CardControlBar>
-        <CardContent></CardContent>
+        <CardContent :RecordID="route.query.Id"></CardContent>
     </div>
 </template>
 
@@ -12,6 +12,9 @@ import CardHeaderBar from './CardHeaderBar.vue';
 import CardControlBar from './CardControlBar.vue';
 import CardContent from './CardContent.vue';
 
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
 </script>
 
 <style scoped>
