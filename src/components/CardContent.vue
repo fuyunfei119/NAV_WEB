@@ -42,7 +42,7 @@ const InitNewRecord = async () => {
         table: 'Customer'
     })
         .then(response => {
-            
+            fields.value = response.data;
         })
         .catch(error => {
             console.log(error);
