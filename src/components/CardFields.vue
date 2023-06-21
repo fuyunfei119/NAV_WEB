@@ -16,20 +16,21 @@
 </template>
 
 <script setup>
-import { computed, ref, defineProps } from 'vue';
+import { computed, ref, defineProps,defineEmits } from 'vue';
+import { debounce } from 'lodash';
 
 const props = defineProps({
     fields: Object
 })
 
+const emits = defineEmits(['UpdateRecord']);
+
 const groupName = computed(() => ref(props.fields.groupName));
 const allFields = computed(() => ref(props.fields.fields));
 
-const updateField = (index, value) => {
-    console.log(index);
-    console.log(value.currentTarget.value);
-    console.log(props.fields.fields[index]);
-};
+const updateField = debounce(async (index, value) => {
+    await emits('UpdateRecord',groupName.value,index,value);
+},500);
 
 </script>
 

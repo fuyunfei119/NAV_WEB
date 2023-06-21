@@ -15,12 +15,18 @@
 
 <script setup>
 import router from '@/router';
+import { defineEmits } from 'vue';
+
+const emits = defineEmits(['UpdateRecordOnBeforeReturnBack']);
 
 const Order_No = 10100;
 const Customer_Name = "Hamburg Software AG";
 
 const goback = () => {
-    router.go(-1);
+    if (window.confirm('you have modified current record. do you want to save that?')) {
+        emits('UpdateRecordOnBeforeReturnBack');
+        router.go(-1);
+    }
 }
 </script>
 

@@ -1,7 +1,7 @@
 <template>
     <div class="card-content">
         <div v-for="field in fields">
-            <CardFields :fields="field"></CardFields>
+            <CardFields :fields="field" @UpdateRecord="UpdateRecord"></CardFields>
         </div>
 
         <SubPageLines></SubPageLines>
@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, defineProps, watch } from 'vue';
+import { ref, onMounted, defineProps, watch, defineExpose } from 'vue';
 import CardFields from '../components/CardFields.vue'
 import SubPageLines from '../components/SubPageLines.vue'
 
@@ -21,6 +21,14 @@ const props = defineProps({
 })
 
 const fields = ref([]);
+
+const UpdateRecord = (groupName,index,value) => {
+    fields.value.forEach(field => {
+        if (field.groupName === groupName.value) {
+            field.fields[index] = value.data;
+        }
+    });
+};
 
 const GetRecordById = async (RecordID) => {
 
@@ -49,14 +57,32 @@ const InitNewRecord = async () => {
         });
 }
 
+const InsertRecord = async () => {
+    
+    axios.post('http://localhost:8080/InsertOrUpdateRecord', {
+        table: 'Customer',
+        record: fields.value
+    })
+        .then(response => {
+            
+        })
+        .catch(error => {
+            console.log(error);
+        });
+}
+
 watch(fields, (newfields) => {
     console.log(fields.value);
-});
+},{ deep: true });
 
 onMounted(async () => {
     if (props.newEntity) return InitNewRecord();
 
     GetRecordById(props.RecordID);
+})
+
+defineExpose({
+    InsertRecord
 })
 </script>
 

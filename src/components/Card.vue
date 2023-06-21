@@ -1,9 +1,9 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
     <div class="container-Card">
-        <CardHeaderBar></CardHeaderBar>
+        <CardHeaderBar @UpdateRecordOnBeforeReturnBack="UpdateRecordOnBeforeReturnBack"></CardHeaderBar>
         <CardControlBar></CardControlBar>
-        <CardContent :newEntity="route.query.newEntity" :RecordID="route.query.Id"></CardContent>
+        <CardContent ref="CardContentRef" :newEntity="route.query.newEntity" :RecordID="route.query.Id"></CardContent>
     </div>
 </template>
 
@@ -13,8 +13,14 @@ import CardControlBar from './CardControlBar.vue';
 import CardContent from './CardContent.vue';
 
 import { useRoute } from 'vue-router';
+import { ref } from 'vue';
 
 const route = useRoute();
+const CardContentRef = ref();
+
+const UpdateRecordOnBeforeReturnBack = () => {
+    CardContentRef.value.InsertRecord();
+}
 </script>
 
 <style scoped>
