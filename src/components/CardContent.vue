@@ -1,7 +1,7 @@
 <template>
     <div class="card-content">
         <div v-for="field in fields">
-            <CardFields :fields="field" ></CardFields>
+            <CardFields :fields="field"></CardFields>
         </div>
 
         <SubPageLines></SubPageLines>
@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, defineProps } from 'vue';
+import { ref, onMounted, defineProps, watch } from 'vue';
 import CardFields from '../components/CardFields.vue'
 import SubPageLines from '../components/SubPageLines.vue'
 
@@ -48,6 +48,10 @@ const InitNewRecord = async () => {
             console.log(error);
         });
 }
+
+watch(fields, (newfields) => {
+    console.log(fields.value);
+});
 
 onMounted(async () => {
     if (props.newEntity) return InitNewRecord();

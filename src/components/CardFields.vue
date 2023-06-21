@@ -8,7 +8,7 @@
             <div class="item" v-for="(item, index) in allFields.value" :key="index">
                 <h4>{{ index }}</h4>
                 <hr>
-                <input type="text" :value="item">
+                <input type="text" @input="updateField(index, $event)" :value="item">
             </div>
         </div>
 
@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { onMounted,computed, ref } from 'vue';
+import { computed, ref, defineProps } from 'vue';
 
 const props = defineProps({
     fields: Object
@@ -25,10 +25,11 @@ const props = defineProps({
 const groupName = computed(() => ref(props.fields.groupName));
 const allFields = computed(() => ref(props.fields.fields));
 
-const getFieldName = (item) => {
-    console.log(allFields.value.value);
-    console.log(item);
-}
+const updateField = (index, value) => {
+    console.log(index);
+    console.log(value.currentTarget.value);
+    console.log(props.fields.fields[index]);
+};
 
 </script>
 
