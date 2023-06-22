@@ -58,10 +58,20 @@ const InitNewRecord = async () => {
 }
 
 const InsertRecord = async () => {
+    let final = {};
+
+    fields.value.forEach(field => {
+        delete field.groupName;
+        final = { ...final, ...field.fields };
+    })
+
+
+
+    console.log(final);
     
     axios.post('http://localhost:8080/InsertOrUpdateRecord', {
         table: 'Customer',
-        record: fields.value
+        record: final
     })
         .then(response => {
             
@@ -72,7 +82,6 @@ const InsertRecord = async () => {
 }
 
 watch(fields, (newfields) => {
-    console.log(fields.value);
 },{ deep: true });
 
 onMounted(async () => {
