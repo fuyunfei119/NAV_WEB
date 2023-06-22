@@ -25,7 +25,7 @@ const fields = ref([]);
 const UpdateRecord = (groupName,index,value) => {
     fields.value.forEach(field => {
         if (field.groupName === groupName.value) {
-            field.fields[index] = value.data;
+            field.fields[index] = value.currentTarget.value;
         }
     });
 };

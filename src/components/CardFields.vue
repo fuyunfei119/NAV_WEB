@@ -16,8 +16,7 @@
 </template>
 
 <script setup>
-import { computed, ref, defineProps,defineEmits } from 'vue';
-import { debounce } from 'lodash';
+import { computed, ref, defineProps,defineEmits, onMounted } from 'vue';
 
 const props = defineProps({
     fields: Object
@@ -28,9 +27,9 @@ const emits = defineEmits(['UpdateRecord']);
 const groupName = computed(() => ref(props.fields.groupName));
 const allFields = computed(() => ref(props.fields.fields));
 
-const updateField = debounce(async (index, value) => {
-    await emits('UpdateRecord',groupName.value,index,value);
-},500);
+const updateField = async (index, value) => {
+    emits('UpdateRecord', groupName.value, index, value);
+};
 
 </script>
 
