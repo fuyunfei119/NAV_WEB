@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Card from './Card.vue';
@@ -47,7 +47,11 @@ const openCard = (RecordID) => {
 }
 
 const findSet = async () => {
-    axios.get('http://localhost:8080/FindSet')
+    axios.get('http://localhost:8080/List/OnMounted', {
+        params: {
+            list: 'Customer'
+        }
+    })
         .then(response => {
             lines.value = response.data;
             lineHeader.value = Object.keys(lines.value[0]);
@@ -65,9 +69,78 @@ watch(lines, (newLines) => {
     }
 });
 
+onBeforeMount(async () => {
+    console.log("OnInit");
+    console.log("OnOpenPage");
+    console.log(lines.value);
+    axios.post('http://localhost:8080/List/OnBeforeMounted', {
+        table: 'Customer'
+    })
+        .then(response => {
+
+        })
+        .catch(error => {
+            console.log(error);
+        });
+})
+
 onMounted(async () => {
     findSet();
+    console.log("OnFindRecord");
+    console.log(lines.value);
+    // findSet();
 });
+
+onBeforeUpdate(async () => {
+    console.log("OnAfterGetRecord");
+    console.log("OnNextRecord");
+    console.log(lines.value);
+
+    axios.post('http://localhost:8080/List/OnBeforeUpdate', {
+        table: 'Customer'
+    })
+        .then(response => {
+
+        })
+        .catch(error => {
+            console.log(error);
+        });
+})
+
+onUpdated(async () => {
+    console.log("OnAfterGetCurrRecord");
+    console.log(lines.value);
+
+    axios.post('http://localhost:8080/List/OnUpdated', {
+        table: 'Customer'
+    })
+        .then(response => {
+
+        })
+        .catch(error => {
+            console.log(error);
+        });
+})
+
+onBeforeUnmount(async () => {
+    console.log("OnQueryClosePage");
+    console.log(lines.value);
+
+    axios.post('http://localhost:8080/List/OnBeforeUnmount', {
+        table: 'Customer'
+    })
+        .then(response => {
+
+        })
+        .catch(error => {
+            console.log(error);
+        });
+})
+
+onMounted(async () => {
+    console.log("OnClosePage");
+    console.log(lines.value);
+})
 </script>
 
 <style scoped>
