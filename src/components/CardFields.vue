@@ -8,7 +8,7 @@
             <div class="item" v-for="(item, index) in allFields.value" :key="index">
                 <h4>{{ index }}</h4>
                 <hr>
-                <input type="text" @input="updateField(index, $event)" :value="item">
+                <input :type="item.type" @input="updateField(index, $event)" :value="item.value">
             </div>
         </div>
 

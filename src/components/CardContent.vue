@@ -25,7 +25,9 @@ const fields = ref([]);
 const UpdateRecord = (groupName,index,value) => {
     fields.value.forEach(field => {
         if (field.groupName === groupName.value) {
-            field.fields[index] = value.currentTarget.value;
+            console.log(field.fields[index]);
+            console.log(typeof value.currentTarget.value);
+            field.fields[index].value = value.currentTarget.value;
         }
     });
 };
@@ -64,8 +66,6 @@ const InsertRecord = async () => {
         delete field.groupName;
         final = { ...final, ...field.fields };
     })
-
-
 
     console.log(final);
     
