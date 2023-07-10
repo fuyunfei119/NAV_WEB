@@ -9,7 +9,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="item in lines" :key="item.id">
+                    <tr v-for="(item, rowIndex) in lines" :key="item.id"
+                        :class="{ 'selected': rowIndex === selectedRowIndex }" @click="selectRow(rowIndex)">
                         <td v-for="(value, header, index) in item" :key="header + index"
                             @click=" index == 0 ? openCard(value) : null">{{ value }}
                         </td>
@@ -32,6 +33,8 @@ const lines = ref([]);
 const lineHeader = ref({});
 const isRecordLoaded = ref(false);
 
+let selectedRowIndex = ref(0);
+
 const router = useRouter();
 const openCard = (RecordID) => {
     router.push(
@@ -44,6 +47,10 @@ const openCard = (RecordID) => {
             },
         },
     )
+}
+
+function selectRow(rowIndex) {
+    selectedRowIndex.value = rowIndex;
 }
 
 watch(lines, (newLines) => {
@@ -67,9 +74,9 @@ watch(lines, (newLines) => {
 });
 
 onBeforeMount(async () => {
-    // console.log("OnInit");
-    // console.log("OnOpenPage");
-    console.log(lines.value);
+    console.log("OnInit");
+    console.log("OnOpenPage");
+
     axios.post('http://localhost:8080/List/OnBeforeMounted', {
         table: 'Customer'
     })
@@ -82,6 +89,7 @@ onBeforeMount(async () => {
 })
 
 onMounted(async () => {
+
     axios.get('http://localhost:8080/List/OnMounted', {
         params: {
             list: 'Customer'
@@ -94,33 +102,37 @@ onMounted(async () => {
         .catch(error => {
             console.log(error);
         });
-    // console.log("OnFindRecord");
+
+    console.log("OnFindRecord");
 });
 
 onBeforeUpdate(async () => {
 
     // console.log("OnAfterGetRecord");
     // console.log("OnNextRecord");
-    // console.log(lines.value);
 
-    axios.post('http://localhost:8080/List/OnBeforeUpdate', {
-        table: 'Customer',
-        records: lines.value
-    })
-        .then(response => {
-
+    if (!isRecordLoaded.value) {
+        axios.post('http://localhost:8080/List/OnBeforeUpdate', {
+            table: 'Customer',
+            records: lines.value
         })
-        .catch(error => {
-            console.log(error);
-        });
+            .then(response => {
+                
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
 })
 
 onUpdated(async () => {
-    // console.log("OnAfterGetCurrRecord");
-    // console.log(lines.value);
+    console.log("OnAfterGetCurrRecord");
+
+    console.log(lines.value[selectedRowIndex.value]);
 
     axios.post('http://localhost:8080/List/OnUpdated', {
-        table: 'Customer'
+        table: 'Customer',
+        record: lines.value[selectedRowIndex.value]
     })
         .then(response => {
 
@@ -131,8 +143,7 @@ onUpdated(async () => {
 })
 
 onBeforeUnmount(async () => {
-    // console.log("OnQueryClosePage");
-    // console.log(lines.value);
+    console.log("OnQueryClosePage");
 
     axios.post('http://localhost:8080/List/OnBeforeUnmount', {
         table: 'Customer'
@@ -146,8 +157,8 @@ onBeforeUnmount(async () => {
 })
 
 onUnmounted(async () => {
-    // console.log("OnClosePage");
-    // console.log(lines.value);
+    console.log("OnClosePage");
+
 })
 </script>
 
@@ -214,5 +225,9 @@ th {
     table-layout: auto;
     text-align: left;
     border-collapse: collapse;
+}
+
+.selected {
+    background-color: var(--Accent);
 }
 </style>
