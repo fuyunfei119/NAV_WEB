@@ -46,32 +46,29 @@ const openCard = (RecordID) => {
     )
 }
 
-const findSet = async () => {
-    axios.get('http://localhost:8080/List/OnMounted', {
-        params: {
-            list: 'Customer'
-        }
-    })
-        .then(response => {
-            lines.value = response.data;
-            lineHeader.value = Object.keys(lines.value[0]);
-        })
-        .catch(error => {
-            console.log(error);
-        });
-}
-
 watch(lines, (newLines) => {
+
     if (!isRecordLoaded.value) {
         isRecordLoaded.value = true;
     } else {
-        findSet();
+        axios.get('http://localhost:8080/List/OnMounted', {
+            params: {
+                list: 'Customer'
+            }
+        })
+            .then(response => {
+                lines.value = response.data;
+                lineHeader.value = Object.keys(lines.value[0]);
+            })
+            .catch(error => {
+                console.log(error);
+            });
     }
 });
 
 onBeforeMount(async () => {
-    console.log("OnInit");
-    console.log("OnOpenPage");
+    // console.log("OnInit");
+    // console.log("OnOpenPage");
     console.log(lines.value);
     axios.post('http://localhost:8080/List/OnBeforeMounted', {
         table: 'Customer'
@@ -85,19 +82,30 @@ onBeforeMount(async () => {
 })
 
 onMounted(async () => {
-    findSet();
-    console.log("OnFindRecord");
-    console.log(lines.value);
-    // findSet();
+    axios.get('http://localhost:8080/List/OnMounted', {
+        params: {
+            list: 'Customer'
+        }
+    })
+        .then(response => {
+            lines.value = response.data;
+            lineHeader.value = Object.keys(lines.value[0]);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+    // console.log("OnFindRecord");
 });
 
 onBeforeUpdate(async () => {
-    console.log("OnAfterGetRecord");
-    console.log("OnNextRecord");
-    console.log(lines.value);
+
+    // console.log("OnAfterGetRecord");
+    // console.log("OnNextRecord");
+    // console.log(lines.value);
 
     axios.post('http://localhost:8080/List/OnBeforeUpdate', {
-        table: 'Customer'
+        table: 'Customer',
+        records: lines.value
     })
         .then(response => {
 
@@ -108,8 +116,8 @@ onBeforeUpdate(async () => {
 })
 
 onUpdated(async () => {
-    console.log("OnAfterGetCurrRecord");
-    console.log(lines.value);
+    // console.log("OnAfterGetCurrRecord");
+    // console.log(lines.value);
 
     axios.post('http://localhost:8080/List/OnUpdated', {
         table: 'Customer'
@@ -123,8 +131,8 @@ onUpdated(async () => {
 })
 
 onBeforeUnmount(async () => {
-    console.log("OnQueryClosePage");
-    console.log(lines.value);
+    // console.log("OnQueryClosePage");
+    // console.log(lines.value);
 
     axios.post('http://localhost:8080/List/OnBeforeUnmount', {
         table: 'Customer'
@@ -137,9 +145,9 @@ onBeforeUnmount(async () => {
         });
 })
 
-onMounted(async () => {
-    console.log("OnClosePage");
-    console.log(lines.value);
+onUnmounted(async () => {
+    // console.log("OnClosePage");
+    // console.log(lines.value);
 })
 </script>
 

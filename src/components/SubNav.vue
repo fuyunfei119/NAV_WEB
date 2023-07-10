@@ -27,6 +27,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import module from '../components/types/Module'
+import HomeView from '../views/HomeView.vue'
 
 const emits = defineEmits(['OnChangeControlBar'])
 const router = useRouter();
@@ -37,8 +38,7 @@ const handleDropDown = (moduleName) => {
 
 function ReturnHome() {
     router.push({
-        path: '/',
-        name: '/'
+        path: '/'
     })
 }
 </script>
