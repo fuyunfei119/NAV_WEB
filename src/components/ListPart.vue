@@ -53,25 +53,25 @@ function selectRow(rowIndex) {
     selectedRowIndex.value = rowIndex;
 }
 
-watch(lines, (newLines) => {
+// watch(lines, (newLines) => {
 
-    if (!isRecordLoaded.value) {
-        isRecordLoaded.value = true;
-    } else {
-        axios.get('http://localhost:8080/List/OnMounted', {
-            params: {
-                list: 'Customer'
-            }
-        })
-            .then(response => {
-                lines.value = response.data;
-                lineHeader.value = Object.keys(lines.value[0]);
-            })
-            .catch(error => {
-                console.log(error);
-            });
-    }
-});
+//     if (!isRecordLoaded.value) {
+//         isRecordLoaded.value = true;
+//     } else {
+//         axios.get('http://localhost:8080/List/OnMounted', {
+//             params: {
+//                 list: 'Customer'
+//             }
+//         })
+//             .then(response => {
+//                 lines.value = response.data;
+//                 lineHeader.value = Object.keys(lines.value[0]);
+//             })
+//             .catch(error => {
+//                 console.log(error);
+//             });
+//     }
+// });
 
 onBeforeMount(async () => {
     console.log("OnInit");
@@ -98,6 +98,7 @@ onMounted(async () => {
         .then(response => {
             lines.value = response.data;
             lineHeader.value = Object.keys(lines.value[0]);
+            isRecordLoaded.value = !isRecordLoaded.value;
         })
         .catch(error => {
             console.log(error);
@@ -111,13 +112,17 @@ onBeforeUpdate(async () => {
     // console.log("OnAfterGetRecord");
     // console.log("OnNextRecord");
 
-    if (!isRecordLoaded.value) {
+    if (isRecordLoaded.value) {
+        console.log("OnAfterGetRecord");
         axios.post('http://localhost:8080/List/OnBeforeUpdate', {
             table: 'Customer',
             records: lines.value
         })
             .then(response => {
-                
+                console.log(response.data);
+                lines.value = response.data;
+                lineHeader.value = Object.keys(lines.value[0]);
+                isRecordLoaded.value = !isRecordLoaded.value;
             })
             .catch(error => {
                 console.log(error);
@@ -127,8 +132,6 @@ onBeforeUpdate(async () => {
 
 onUpdated(async () => {
     console.log("OnAfterGetCurrRecord");
-
-    console.log(lines.value[selectedRowIndex.value]);
 
     axios.post('http://localhost:8080/List/OnUpdated', {
         table: 'Customer',
