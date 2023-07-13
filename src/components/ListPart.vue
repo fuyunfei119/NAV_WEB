@@ -10,9 +10,10 @@
                 </thead>
                 <tbody>
                     <tr v-for="(item, rowIndex) in lines" :key="item.id"
-                        :class="{ 'selected': rowIndex === selectedRowIndex }" @click="selectRow(rowIndex)">
-                        <td v-for="(value, header, index) in item" :key="header + index"
-                            @click=" index == 0 ? openCard(value) : null">{{ value }}
+                        :class="{ 'selected': selectedRowIndex.includes(rowIndex) }" @click="selectRow(rowIndex)">
+                        <td v-for="(value, header, index) in item" :key="header + index" :tabindex="0"
+                            @click=" index == 0 ? openCard(value) : null">
+                            {{ value }}
                         </td>
                     </tr>
                 </tbody>
@@ -28,12 +29,16 @@ import axios from 'axios';
 import Card from './Card.vue';
 
 const expand = computed(() => lineHeader.value.length > 6);
+const lastLineIndex = computed(() => lines.value.length - 1);
 
 const lines = ref([]);
 const lineHeader = ref({});
 const isRecordLoaded = ref(false);
 
-let selectedRowIndex = ref(0);
+const selectedRowIndex = ref([]);
+let upToDate = false;
+let shiftPressed = false;
+const keys = ['ArrowDown', 'ArrowUp', 'Shift'];
 
 const router = useRouter();
 const openCard = (RecordID) => {
@@ -50,32 +55,50 @@ const openCard = (RecordID) => {
 }
 
 function selectRow(rowIndex) {
-    selectedRowIndex.value = rowIndex;
+    selectedRowIndex.value.push(rowIndex);
+    upToDate = true;
 }
 
-// watch(lines, (newLines) => {
+// function handleKeydown(event) {
 
-//     if (!isRecordLoaded.value) {
-//         isRecordLoaded.value = true;
-//     } else {
-//         axios.get('http://localhost:8080/List/OnMounted', {
-//             params: {
-//                 list: 'Customer'
-//             }
-//         })
-//             .then(response => {
-//                 lines.value = response.data;
-//                 lineHeader.value = Object.keys(lines.value[0]);
-//             })
-//             .catch(error => {
-//                 console.log(error);
-//             });
+//     if (keys.includes(event.key)) {
+//         switch (event.key) {
+//             case "ArrowDown":
+//                 handleArrowDown();
+//                 break;
+//             case "ArrowUp":
+//                 handleArrowUp();
+//                 break;
+//             case "Shift":
+//                 handleShift(event);
+//                 break;
+//         }
 //     }
-// });
+// }
+
+// function handleArrowDown() {
+//     if (selectedRowIndex.value === lastLineIndex.value) return;
+
+//     if (!shiftPressed) {
+//         selectRow(selectedRowIndex.value + 1);
+//     } else {
+
+//     }
+
+// }
+
+// function handleArrowUp() {
+//     if (selectedRowIndex.value === 0) return;
+//     selectRow(selectedRowIndex.value - 1);
+// }
+
+// function handleShift(event) {
+//     if (event.shiftKey) {
+//         shiftPressed = true;
+//     }
+// }
 
 onBeforeMount(async () => {
-    console.log("OnInit");
-    console.log("OnOpenPage");
 
     axios.post('http://localhost:8080/List/OnBeforeMounted', {
         table: 'Customer'
@@ -99,18 +122,16 @@ onMounted(async () => {
             lines.value = response.data;
             lineHeader.value = Object.keys(lines.value[0]);
             isRecordLoaded.value = !isRecordLoaded.value;
+            upToDate = true;
         })
         .catch(error => {
             console.log(error);
         });
 
-    console.log("OnFindRecord");
+    // window.addEventListener('keydown', handleKeydown);
 });
 
 onBeforeUpdate(async () => {
-
-    // console.log("OnAfterGetRecord");
-    // console.log("OnNextRecord");
 
     if (isRecordLoaded.value) {
         console.log("OnAfterGetRecord");
@@ -119,7 +140,6 @@ onBeforeUpdate(async () => {
             records: lines.value
         })
             .then(response => {
-                console.log(response.data);
                 lines.value = response.data;
                 lineHeader.value = Object.keys(lines.value[0]);
                 isRecordLoaded.value = !isRecordLoaded.value;
@@ -131,18 +151,22 @@ onBeforeUpdate(async () => {
 })
 
 onUpdated(async () => {
-    console.log("OnAfterGetCurrRecord");
+    // console.log("OnAfterGetCurrRecord");
 
-    axios.post('http://localhost:8080/List/OnUpdated', {
-        table: 'Customer',
-        record: lines.value[selectedRowIndex.value]
-    })
-        .then(response => {
+    if (!isRecordLoaded.value && upToDate) {
 
+        axios.post('http://localhost:8080/List/OnUpdated', {
+            table: 'Customer',
+            record: lines.value[selectedRowIndex.value]
         })
-        .catch(error => {
-            console.log(error);
-        });
+            .then(response => {
+                lines.value[selectedRowIndex.value] = response.data;
+                upToDate = false;
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
 })
 
 onBeforeUnmount(async () => {
@@ -161,7 +185,7 @@ onBeforeUnmount(async () => {
 
 onUnmounted(async () => {
     console.log("OnClosePage");
-
+    window.removeEventListener('keydown', handleKeydown)
 })
 </script>
 
@@ -207,6 +231,7 @@ tr {
 
 th {
     cursor: pointer;
+    resize: horizontal;
 }
 
 td,
@@ -215,6 +240,16 @@ th {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+td:first-of-type {
+    display: flex;
+    justify-content: space-between;
+}
+
+td>span:hover {
+    /* display: flex !important;
+    justify-content: space-between !important; */
 }
 
 .expand-th {
