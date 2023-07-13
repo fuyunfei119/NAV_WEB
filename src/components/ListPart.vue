@@ -35,7 +35,7 @@ const lines = ref([]);
 const lineHeader = ref({});
 const isRecordLoaded = ref(false);
 
-const selectedRowIndex = ref([]);
+const selectedRowIndex = ref([0]);
 let upToDate = false;
 let shiftPressed = false;
 const keys = ['ArrowDown', 'ArrowUp', 'Shift'];
@@ -55,48 +55,79 @@ const openCard = (RecordID) => {
 }
 
 function selectRow(rowIndex) {
-    selectedRowIndex.value.push(rowIndex);
+    if (shiftPressed) {
+        selectedRowIndex.value.push(rowIndex);
+    } else {
+        selectedRowIndex.value = [];
+        selectedRowIndex.value[0] = rowIndex;
+    }
+
+    console.log(selectedRowIndex.value);
+
     upToDate = true;
 }
 
-// function handleKeydown(event) {
+function handleKeydown(event) {
 
-//     if (keys.includes(event.key)) {
-//         switch (event.key) {
-//             case "ArrowDown":
-//                 handleArrowDown();
-//                 break;
-//             case "ArrowUp":
-//                 handleArrowUp();
-//                 break;
-//             case "Shift":
-//                 handleShift(event);
-//                 break;
-//         }
-//     }
-// }
+    if (keys.includes(event.key)) {
+        switch (event.key) {
+            case "ArrowDown":
+                handleArrowDown();
+                break;
+            case "ArrowUp":
+                handleArrowUp();
+                break;
+            case "Shift":
+                handleShift(event);
+                break;
+        }
+    }
+}
 
-// function handleArrowDown() {
-//     if (selectedRowIndex.value === lastLineIndex.value) return;
+function handleArrowDown() {
+    if (selectedRowIndex.value[0] === lastLineIndex.value) return;
 
-//     if (!shiftPressed) {
-//         selectRow(selectedRowIndex.value + 1);
-//     } else {
+    if (!shiftPressed) {
+        selectRow(selectedRowIndex.value[0] + 1);
+    } else {
+        selectedRowIndex.value.push(selectedRowIndex.value[0] + 1);
+    }
 
-//     }
+}
 
-// }
+function handleArrowUp() {
+    if (selectedRowIndex.value[0] === 0) return;
 
-// function handleArrowUp() {
-//     if (selectedRowIndex.value === 0) return;
-//     selectRow(selectedRowIndex.value - 1);
-// }
+    if (!shiftPressed) {
+        selectRow(selectedRowIndex.value[0] - 1);
+    } else {
+        selectedRowIndex.value.push(selectedRowIndex.value[0] - 1);
+    }
 
-// function handleShift(event) {
-//     if (event.shiftKey) {
-//         shiftPressed = true;
-//     }
-// }
+}
+
+function handleShift(event) {
+    if (event.shiftKey) {
+        shiftPressed = true;
+    }
+}
+
+function handleKeyUp(event) {
+
+    console.log(event.key);
+
+    if (keys.includes(event.key)) {
+        switch (event.key) {
+            case "ArrowDown":
+                break;
+            case "ArrowUp":
+                break;
+            case "Shift":
+                shiftPressed = false;
+                break;
+        }
+    }
+}
 
 onBeforeMount(async () => {
 
@@ -128,7 +159,8 @@ onMounted(async () => {
             console.log(error);
         });
 
-    // window.addEventListener('keydown', handleKeydown);
+    window.addEventListener('keydown', handleKeydown);
+    window.addEventListener('keyup', handleKeyUp);
 });
 
 onBeforeUpdate(async () => {
@@ -155,12 +187,14 @@ onUpdated(async () => {
 
     if (!isRecordLoaded.value && upToDate) {
 
+        console.log(lines.value[selectedRowIndex.value.at(0)]);
+
         axios.post('http://localhost:8080/List/OnUpdated', {
             table: 'Customer',
-            record: lines.value[selectedRowIndex.value]
+            record: lines.value[selectedRowIndex.value.at(0)]
         })
             .then(response => {
-                lines.value[selectedRowIndex.value] = response.data;
+                lines.value[selectedRowIndex.value.at(0)] = response.data;
                 upToDate = false;
             })
             .catch(error => {
@@ -170,7 +204,7 @@ onUpdated(async () => {
 })
 
 onBeforeUnmount(async () => {
-    console.log("OnQueryClosePage");
+    // console.log("OnQueryClosePage");
 
     axios.post('http://localhost:8080/List/OnBeforeUnmount', {
         table: 'Customer'
@@ -184,8 +218,9 @@ onBeforeUnmount(async () => {
 })
 
 onUnmounted(async () => {
-    console.log("OnClosePage");
-    window.removeEventListener('keydown', handleKeydown)
+    // console.log("OnClosePage");
+    window.removeEventListener('keydown', handleKeydown);
+    window.removeEventListener('keyup', handleKeyUp);
 })
 </script>
 
