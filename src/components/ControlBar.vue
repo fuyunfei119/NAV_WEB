@@ -6,123 +6,26 @@
         </span>
 
         <div @click="RedirectPage(item)" v-for="(item, index) in ButtonsToRender" :key="index" class="buttons-controlbar">
-            <a>{{ item.ControlName }}</a>
+            <a @click="RaiseAction(item)">{{ item }}</a>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, defineExpose } from 'vue';
 import module from '../components/types/Module'
 import List from './List.vue';
 import { useRouter } from 'vue-router';
 import Card from './Card.vue';
+import axios from 'axios';
 
 const router = useRouter();
 
-const ButtonsOfDefault = [
-    {
-        "ControlName": "Search"
-    },
-    {
-        "ControlName": "New"
-    },
-    {
-        "ControlName": "Delete"
-    },
-    {
-        "ControlName": "Home"
-    }
-]
-const ButtonsOfSales = [
-    {
-        "ControlName": "Customer"
-    },
-    {
-        "ControlName": "Sales Orders"
-    },
-    {
-        "ControlName": "Sales Invoices"
-    },
-    {
-        "ControlName": "Sales Shipments"
-    },
-    {
-        "ControlName": "Reminders"
-    },
-    {
-        "ControlName": "Sales Journals"
-    },
-    {
-        "ControlName": "Return Orders"
-    }
-]
-const ButtonsOfPurchase = [
-    {
-        "ControlName": "Vendor"
-    },
-    {
-        "ControlName": "Purchase Orders"
-    },
-    {
-        "ControlName": "Purchase Invoices"
-    },
-    {
-        "ControlName": "Purchase Shipment"
-    },
-    {
-        "ControlName": "Reminders"
-    },
-    {
-        "ControlName": "Purchase Journals"
-    },
-    {
-        "ControlName": "Return Purchase"
-    }
-]
-const ButtonsOfDocument = [
-    {
-        "ControlName": "Posted Sales Invoices"
-    },
-    {
-        "ControlName": "Posted Sales Shipments"
-    },
-    {
-        "ControlName": "Posted Purchase Invoices"
-    },
-    {
-        "ControlName": "Posted Purchase Shipments"
-    },
-    {
-        "ControlName": "Issued Reminders"
-    },
-    {
-        "ControlName": "Sales Order Archives"
-    },
-    {
-        "ControlName": "Purchase Order Archives"
-    }
-]
-const ButtonsOfInventory = [
-    {
-        "ControlName": "Items"
-    },
-    {
-        "ControlName": "Item Journals"
-    },
-    {
-        "ControlName": "Locations"
-    },
-    {
-        "ControlName": "Item "
-    },
-    {
-        "ControlName": "Item Tracking"
-    },
-    {
-        "ControlName": "Drop Shipment"
-    }
-]
+const ButtonsOfDefault = ["Search", "New", "Delete", "Home"];
+const ButtonsOfSales = ["Customer", "Sales Orders", "Sales Invoices", "Sales Shipments", "Reminders", "Sales Journals", "Return Orders"];
+const ButtonsOfPurchase = ["Vendor", "Purchase Orders", "Purchase Invoices", "Purchase Shipment", "Reminders", "Purchase Journals", "Return Purchase"];
+const ButtonsOfDocument = ["Posted Sales Invoices", "Posted Sales Shipments", "Posted Purchase Invoices", "Posted Purchase Shipments", "Issued Reminders", "Sales Order Archives", "Purchase Order Archives"];
+const ButtonsOfInventory = ["Items", "Item Journals", "Locations", "Item ", "Item Tracking", "Drop Shipment"]
 let ButtonsToRender = ref(ButtonsOfDefault);
 
 function RedirectPage(target) {
@@ -151,7 +54,7 @@ function RedirectPage(target) {
 
 const HandlePageAction = (ControlName) => {
     switch (ControlName) {
-        case 'New': 
+        case 'New':
             router.push({
                 path: '/card',
                 name: 'card',
@@ -188,7 +91,15 @@ function RenderButtons(moduleName) {
 }
 
 const WithSales = () => {
-    ButtonsToRender.value = ButtonsOfSales;
+    axios.post('http://localhost:8080/GetActions', {
+        page: 'CustomerList'
+    })
+        .then(response => {
+            ButtonsToRender.value = response.data
+        })
+        .catch(error => {
+            console.log(error);
+        });
 }
 
 const WithPurchase = () => {
@@ -205,6 +116,20 @@ const WithInventory = () => {
 
 const withDefaults = () => {
     ButtonsToRender.value = ButtonsOfDefault;
+}
+
+const RaiseAction = (actionName) => {
+
+    axios.post('http://localhost:8080/RaiseActions', {
+        page: 'CustomerList',
+        actionName: actionName
+    })
+        .then(response => {
+            console.log(response.data);
+        })
+        .catch(error => {
+            console.log(error);
+        });
 }
 
 defineExpose({
@@ -229,6 +154,7 @@ defineExpose({
     flex: 1;
     height: 48px;
     line-height: 60px;
+    max-width: 10%;
 }
 
 .table-name:hover {
@@ -242,9 +168,11 @@ defineExpose({
     justify-content: space-around;
     height: 48px;
     line-height: 60px;
+    max-width: 10%;
+    min-width: 10%;
 }
 
-.buttons-controlbar > a:hover {
+.buttons-controlbar>a:hover {
     cursor: pointer;
     text-decoration: underline;
 }
