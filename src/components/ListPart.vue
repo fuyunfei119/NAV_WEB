@@ -56,13 +56,18 @@ const openCard = (RecordID) => {
 
 function selectRow(rowIndex) {
     if (shiftPressed) {
-        selectedRowIndex.value.push(rowIndex);
+        if (selectedRowIndex.value[selectedRowIndex.value.length - 1] + 1 != rowIndex) {
+            for (let index = Math.max(...selectedRowIndex.value) + 1; index < rowIndex + 1; index++) {
+                selectedRowIndex.value.push(index);
+            }
+        } else {
+            selectedRowIndex.value.push(rowIndex);
+        }
+
     } else {
         selectedRowIndex.value = [];
         selectedRowIndex.value[0] = rowIndex;
     }
-
-    console.log(selectedRowIndex.value);
 
     upToDate = true;
 }
@@ -85,25 +90,27 @@ function handleKeydown(event) {
 }
 
 function handleArrowDown() {
-    if (selectedRowIndex.value[0] === lastLineIndex.value) return;
+    if (selectedRowIndex.value.includes(lastLineIndex.value)) return;
 
     if (!shiftPressed) {
         selectRow(selectedRowIndex.value[0] + 1);
     } else {
-        selectedRowIndex.value.push(selectedRowIndex.value[0] + 1);
+        if (!selectedRowIndex.value.includes(Math.max(...selectedRowIndex.value) + 1)) {
+            selectedRowIndex.value.push(Math.max(...selectedRowIndex.value) + 1);
+        }
     }
-
 }
 
 function handleArrowUp() {
-    if (selectedRowIndex.value[0] === 0) return;
+    if (selectedRowIndex.value.includes(0)) return;
 
     if (!shiftPressed) {
         selectRow(selectedRowIndex.value[0] - 1);
     } else {
-        selectedRowIndex.value.push(selectedRowIndex.value[0] - 1);
+        if (!selectedRowIndex.value.includes(Math.min(...selectedRowIndex.value) - 1)) {
+            selectedRowIndex.value.push(Math.min(...selectedRowIndex.value) - 1);
+        }
     }
-
 }
 
 function handleShift(event) {
@@ -113,8 +120,6 @@ function handleShift(event) {
 }
 
 function handleKeyUp(event) {
-
-    console.log(event.key);
 
     if (keys.includes(event.key)) {
         switch (event.key) {
