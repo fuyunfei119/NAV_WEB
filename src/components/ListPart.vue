@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, computed, watch } from 'vue';
+import { ref, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, computed, watch, defineExpose  } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Card from './Card.vue';
@@ -134,6 +134,20 @@ function handleKeyUp(event) {
     }
 }
 
+const updateLine = () => {
+
+    axios.post('http://localhost:8080/List/OnBeforeUpdate', {
+            table: 'Customer',
+            records: lines.value
+        })
+            .then(response => {
+                lines.value = response.data;
+            })
+            .catch(error => {
+                console.log(error);
+            });
+}
+
 onBeforeMount(async () => {
 
     axios.post('http://localhost:8080/List/OnBeforeMounted', {
@@ -188,7 +202,6 @@ onBeforeUpdate(async () => {
 })
 
 onUpdated(async () => {
-    // console.log("OnAfterGetCurrRecord");
 
     if (!isRecordLoaded.value && upToDate) {
 
@@ -209,7 +222,6 @@ onUpdated(async () => {
 })
 
 onBeforeUnmount(async () => {
-    // console.log("OnQueryClosePage");
 
     axios.post('http://localhost:8080/List/OnBeforeUnmount', {
         table: 'Customer'
@@ -223,10 +235,13 @@ onBeforeUnmount(async () => {
 })
 
 onUnmounted(async () => {
-    // console.log("OnClosePage");
     window.removeEventListener('keydown', handleKeydown);
     window.removeEventListener('keyup', handleKeyUp);
 })
+
+defineExpose({
+    updateLine
+});
 </script>
 
 <style scoped>
@@ -285,11 +300,6 @@ th {
 td:first-of-type {
     display: flex;
     justify-content: space-between;
-}
-
-td>span:hover {
-    /* display: flex !important;
-    justify-content: space-between !important; */
 }
 
 .expand-th {

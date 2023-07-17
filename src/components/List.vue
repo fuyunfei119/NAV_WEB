@@ -1,8 +1,8 @@
 <template>
     <NavBar></NavBar>
     <SubNav @OnChangeControlBar="OnChangeControlBar"></SubNav>
-    <ControlBarVue ref="ControlBarRef"></ControlBarVue>
-    <ListPart></ListPart>
+    <ControlBarVue @RaiseActionForList="RaiseActionForList" ref="ControlBarRef"></ControlBarVue>
+    <ListPart ref="ListPart"></ListPart>
 </template>
 
 <script setup>
@@ -13,10 +13,16 @@ import ListPart from "../components/ListPart.vue";
 import { ref } from "vue";
 
 const ControlBarRef = ref(ControlBarVue);
+const ListPartRef = ref(ListPart);
 
 function OnChangeControlBar(modules) {
     ControlBarRef.value.RenderButtons(modules);
-} 
+}
+
+function RaiseActionForList() {
+    console.log("Raise Action!!!");
+    ListPartRef.value.updateLine();
+}
 </script>
 
 <style scoped></style>

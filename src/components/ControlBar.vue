@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { ref, defineExpose } from 'vue';
+import { ref, defineExpose, defineEmits } from 'vue';
 import module from '../components/types/Module'
 import List from './List.vue';
 import { useRouter } from 'vue-router';
@@ -27,6 +27,12 @@ const ButtonsOfPurchase = ["Vendor", "Purchase Orders", "Purchase Invoices", "Pu
 const ButtonsOfDocument = ["Posted Sales Invoices", "Posted Sales Shipments", "Posted Purchase Invoices", "Posted Purchase Shipments", "Issued Reminders", "Sales Order Archives", "Purchase Order Archives"];
 const ButtonsOfInventory = ["Items", "Item Journals", "Locations", "Item ", "Item Tracking", "Drop Shipment"]
 let ButtonsToRender = ref(ButtonsOfDefault);
+
+const emits = defineEmits(['RaiseActionForList']);
+
+const OnRaiseAction = () => {
+    emits('RaiseActionForList');
+}
 
 function RedirectPage(target) {
     switch (target.ControlName) {
@@ -125,7 +131,7 @@ const RaiseAction = (actionName) => {
         actionName: actionName
     })
         .then(response => {
-            console.log(response.data);
+            OnRaiseAction();
         })
         .catch(error => {
             console.log(error);
