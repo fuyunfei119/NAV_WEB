@@ -19,8 +19,7 @@ function OnChangeControlBar(modules) {
     ControlBarRef.value.RenderButtons(modules);
 }
 
-function RaiseActionForList() {
-    console.log("Raise Action!!!");
+function RaiseActionForList(actionName) {
     ListPartRef.value.updateLine();
 }
 </script>

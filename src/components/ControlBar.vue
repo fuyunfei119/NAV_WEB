@@ -21,7 +21,7 @@ import axios from 'axios';
 
 const router = useRouter();
 
-const ButtonsOfDefault = ["Search", "New", "Delete", "Home"];
+const ButtonsOfDefault = ["Search", "New", "Delete", "Edit"];
 const ButtonsOfSales = ["Customer", "Sales Orders", "Sales Invoices", "Sales Shipments", "Reminders", "Sales Journals", "Return Orders"];
 const ButtonsOfPurchase = ["Vendor", "Purchase Orders", "Purchase Invoices", "Purchase Shipment", "Reminders", "Purchase Journals", "Return Purchase"];
 const ButtonsOfDocument = ["Posted Sales Invoices", "Posted Sales Shipments", "Posted Purchase Invoices", "Posted Purchase Shipments", "Issued Reminders", "Sales Order Archives", "Purchase Order Archives"];
@@ -30,12 +30,12 @@ let ButtonsToRender = ref(ButtonsOfDefault);
 
 const emits = defineEmits(['RaiseActionForList']);
 
-const OnRaiseAction = () => {
-    emits('RaiseActionForList');
+const OnRaiseAction = (actionName) => {
+    emits('RaiseActionForList',actionName);
 }
 
 function RedirectPage(target) {
-    switch (target.ControlName) {
+    switch (target) {
         case 'Customer':
             router.push({
                 path: '/list',
@@ -97,15 +97,16 @@ function RenderButtons(moduleName) {
 }
 
 const WithSales = () => {
-    axios.post('http://localhost:8080/GetActions', {
-        page: 'CustomerList'
-    })
-        .then(response => {
-            ButtonsToRender.value = response.data
-        })
-        .catch(error => {
-            console.log(error);
-        });
+    ButtonsToRender.value = ButtonsOfSales;
+    // axios.post('http://localhost:8080/GetActions', {
+    //     page: 'CustomerList'
+    // })
+    //     .then(response => {
+    //         ButtonsToRender.value = ButtonsOfSales.value;
+    //     })
+    //     .catch(error => {
+    //         console.log(error);
+    //     });
 }
 
 const WithPurchase = () => {
@@ -131,7 +132,7 @@ const RaiseAction = (actionName) => {
         actionName: actionName
     })
         .then(response => {
-            OnRaiseAction();
+            OnRaiseAction(actionName);
         })
         .catch(error => {
             console.log(error);

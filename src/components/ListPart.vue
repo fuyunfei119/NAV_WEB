@@ -12,7 +12,7 @@
                     <tr v-for="(item, rowIndex) in lines" :key="item.id"
                         :class="{ 'selected': selectedRowIndex.includes(rowIndex) }" @click="selectRow(rowIndex)">
                         <td v-for="(value, header, index) in item" :key="header + index" :tabindex="0"
-                            @click=" index == 0 ? openCard(value) : null">
+                            @click=" index == 0 ? openCard(value) : null" :contenteditable="contenteditable">
                             {{ value }}
                         </td>
                     </tr>
@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, computed, watch, defineExpose  } from 'vue';
+import { ref, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, computed, defineExpose  } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Card from './Card.vue';
@@ -34,6 +34,7 @@ const lastLineIndex = computed(() => lines.value.length - 1);
 const lines = ref([]);
 const lineHeader = ref({});
 const isRecordLoaded = ref(false);
+const contenteditable = ref(false);
 
 const selectedRowIndex = ref([0]);
 let upToDate = false;
@@ -134,7 +135,12 @@ function handleKeyUp(event) {
     }
 }
 
-const updateLine = () => {
+function updateLine() {
+
+    // if (actionName === 'Edit') {
+    //     contenteditable.value = !contenteditable.value;
+    //     return;
+    // }
 
     axios.post('http://localhost:8080/List/OnBeforeUpdate', {
             table: 'Customer',
@@ -240,7 +246,7 @@ onUnmounted(async () => {
 })
 
 defineExpose({
-    updateLine
+    updateLine,
 });
 </script>
 
@@ -309,7 +315,6 @@ td:first-of-type {
 .expand-table {
     width: 100%;
     display: table;
-    /*table-layout: fixed;*/
     table-layout: auto;
     text-align: left;
     border-collapse: collapse;
