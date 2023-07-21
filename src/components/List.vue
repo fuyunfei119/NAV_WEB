@@ -2,7 +2,7 @@
     <NavBar></NavBar>
     <SubNav @OnChangeControlBar="OnChangeControlBar"></SubNav>
     <ControlBarVue @RaiseActionForList="RaiseActionForList" ref="ControlBarRef"></ControlBarVue>
-    <ListPart ref="ListPart"></ListPart>
+    <ListPart ref="ListPartRef"></ListPart>
 </template>
 
 <script setup>
@@ -20,7 +20,7 @@ function OnChangeControlBar(modules) {
 }
 
 function RaiseActionForList(actionName) {
-    ListPartRef.value.updateLine();
+    ListPartRef.value.updateLine(actionName);
 }
 </script>
 

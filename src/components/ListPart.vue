@@ -10,9 +10,16 @@
                 </thead>
                 <tbody>
                     <tr v-for="(item, rowIndex) in lines" :key="item.id"
-                        :class="{ 'selected': selectedRowIndex.includes(rowIndex) }" @click="selectRow(rowIndex)">
-                        <td v-for="(value, header, index) in item" :key="header + index" :tabindex="0"
-                            @click=" index == 0 ? openCard(value) : null" :contenteditable="contenteditable">
+                        :class="{ 'selected': selectedRowIndex.includes(rowIndex) }" 
+                        @click="selectRow(rowIndex)">
+                        <td v-for="(value, header, index) in item" 
+                            :key="header + index" 
+                            :tabindex="0"
+                            @click=" index == 0 ? openCard(value) : null" 
+                            :contenteditable="contenteditable"
+                            @blur="handleBlur(value, header, rowIndex, item,$event)"
+                            ref="tdElement"
+                            >
                             {{ value }}
                         </td>
                     </tr>
@@ -35,6 +42,8 @@ const lines = ref([]);
 const lineHeader = ref({});
 const isRecordLoaded = ref(false);
 const contenteditable = ref(false);
+
+const tdElement = ref(null);
 
 const selectedRowIndex = ref([0]);
 let upToDate = false;
@@ -135,12 +144,12 @@ function handleKeyUp(event) {
     }
 }
 
-function updateLine() {
+function updateLine(actionName) {
 
-    // if (actionName === 'Edit') {
-    //     contenteditable.value = !contenteditable.value;
-    //     return;
-    // }
+    if (actionName === 'Edit') {
+        contenteditable.value = !contenteditable.value;
+        return;
+    }
 
     axios.post('http://localhost:8080/List/OnBeforeUpdate', {
             table: 'Customer',
@@ -153,6 +162,12 @@ function updateLine() {
                 console.log(error);
             });
 }
+
+
+const handleBlur = (value, header, rowIndex, item,event) => {
+    const newValue = event.target.innerText;
+    console.log("Page Validate",value,newValue,header,rowIndex,item);
+};
 
 onBeforeMount(async () => {
 
@@ -191,7 +206,7 @@ onMounted(async () => {
 onBeforeUpdate(async () => {
 
     if (isRecordLoaded.value) {
-        console.log("OnAfterGetRecord");
+
         axios.post('http://localhost:8080/List/OnBeforeUpdate', {
             table: 'Customer',
             records: lines.value
@@ -210,8 +225,6 @@ onBeforeUpdate(async () => {
 onUpdated(async () => {
 
     if (!isRecordLoaded.value && upToDate) {
-
-        console.log(lines.value[selectedRowIndex.value.at(0)]);
 
         axios.post('http://localhost:8080/List/OnUpdated', {
             table: 'Customer',
