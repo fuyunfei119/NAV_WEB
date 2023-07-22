@@ -10,16 +10,10 @@
                 </thead>
                 <tbody>
                     <tr v-for="(item, rowIndex) in lines" :key="item.id"
-                        :class="{ 'selected': selectedRowIndex.includes(rowIndex) }" 
-                        @click="selectRow(rowIndex)">
-                        <td v-for="(value, header, index) in item" 
-                            :key="header + index" 
-                            :tabindex="0"
-                            @click=" index == 0 ? openCard(value) : null" 
-                            :contenteditable="contenteditable"
-                            @blur="handleBlur(value, header, rowIndex, item,$event)"
-                            ref="tdElement"
-                            >
+                        :class="{ 'selected': selectedRowIndex.includes(rowIndex) }" @click="selectRow(rowIndex)">
+                        <td v-for="(value, header, index) in item" :key="header + index" :tabindex="0"
+                            @click=" index == 0 ? openCard(value) : null" :contenteditable="contenteditable"
+                            @blur="handleBlur(value, header, rowIndex, item, $event)" ref="tdElement">
                             {{ value }}
                         </td>
                     </tr>
@@ -30,7 +24,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, computed, defineExpose  } from 'vue';
+import { ref, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, computed, defineExpose } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Card from './Card.vue';
@@ -152,21 +146,41 @@ function updateLine(actionName) {
     }
 
     axios.post('http://localhost:8080/List/OnBeforeUpdate', {
-            table: 'Customer',
-            records: lines.value
+        table: 'Customer',
+        records: lines.value
+    })
+        .then(response => {
+            lines.value = response.data;
         })
-            .then(response => {
-                lines.value = response.data;
-            })
-            .catch(error => {
-                console.log(error);
-            });
+        .catch(error => {
+            console.log(error);
+        });
 }
 
 
-const handleBlur = (value, header, rowIndex, item,event) => {
+const handleBlur = (value, header, rowIndex, item, event) => {
     const newValue = event.target.innerText;
-    console.log("Page Validate",value,newValue,header,rowIndex,item);
+
+    if (value == newValue) {
+        return;
+    }
+
+    axios.post('http://localhost:8080/List/PageFieldValidate', {
+        table: 'Customer',
+        page: 'customerList',
+        currentValue: value,
+        newValue: newValue,
+        field: header,
+        rowIndex: rowIndex,
+        record: item
+    })
+        .then(response => {
+            console.log(lines.value[rowIndex]);
+            lines.value[rowIndex] = response.data;
+        })
+        .catch(error => {
+            console.log(error);
+        });
 };
 
 onBeforeMount(async () => {
