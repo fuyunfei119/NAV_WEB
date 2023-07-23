@@ -223,9 +223,11 @@ onBeforeUpdate(async () => {
 
         axios.post('http://localhost:8080/List/OnBeforeUpdate', {
             table: 'Customer',
-            records: lines.value
+            records: lines.value,
+            page: 'customerList'
         })
             .then(response => {
+                console.log(response.data);
                 lines.value = response.data;
                 lineHeader.value = Object.keys(lines.value[0]);
                 isRecordLoaded.value = !isRecordLoaded.value;
@@ -242,7 +244,8 @@ onUpdated(async () => {
 
         axios.post('http://localhost:8080/List/OnUpdated', {
             table: 'Customer',
-            record: lines.value[selectedRowIndex.value.at(0)]
+            record: lines.value[selectedRowIndex.value.at(0)],
+            page: 'customerList'
         })
             .then(response => {
                 lines.value[selectedRowIndex.value.at(0)] = response.data;
