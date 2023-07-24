@@ -143,6 +143,48 @@ function updateLine(actionName) {
     if (actionName === 'Edit') {
         contenteditable.value = !contenteditable.value;
         return;
+    } else if (actionName === 'New') {
+
+        const newRow = {}; // Create an empty object for the new row data
+        lineHeader.value.forEach((header) => {
+            // Initialize each column value of the new row to some default value
+            // For example, if your table headers are 'header1', 'header2', ...
+            // you can set the initial values as follows:
+            newRow[header] = '';
+        });
+
+        // Push the new row data to the lines array
+        lines.value.push(newRow);
+
+        // Optionally, set contenteditable to true for the new row to enable editing
+        contenteditable.value = true;
+
+        // Create a new <tr> element and append it to the <tbody> in the DOM
+        const tableBody = document.querySelector('tbody');
+        const newRowElement = document.createElement('tr');
+        newRowElement.setAttribute('v-for', '(item, rowIndex) in lines');
+        newRowElement.setAttribute(':key', 'item.id');
+        newRowElement.setAttribute(':class', '{ "selected": selectedRowIndex.includes(rowIndex) }');
+        newRowElement.setAttribute('@click', 'selectRow(rowIndex)');
+
+        // Add <td> elements to the new row for each column/header
+        lineHeader.value.forEach((header) => {
+            const newCell = document.createElement('td');
+            newCell.setAttribute('v-for', '(value, header, index) in item');
+            newCell.setAttribute(':key', 'header + index');
+            newCell.setAttribute(':tabindex', '0');
+            newCell.setAttribute('@click', 'index == 0 ? openCard(value) : null');
+            newCell.setAttribute(':contenteditable', 'contenteditable');
+            newCell.setAttribute('@blur', 'handleBlur(value, header, rowIndex, item, $event)');
+            // Optionally, you can set the initial cell value to the default value you want
+            newCell.textContent = newRow[header];
+            newRowElement.appendChild(newCell);
+        });
+
+        // Append the new <tr> element to the <tbody>
+        tableBody.appendChild(newRowElement);
+
+        return;
     }
 
     axios.post('http://localhost:8080/List/OnBeforeUpdate', {
