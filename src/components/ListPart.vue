@@ -73,6 +73,8 @@ function selectRow(rowIndex) {
         selectedRowIndex.value[0] = rowIndex;
     }
 
+    console.log(selectedRowIndex.value);
+
     upToDate = true;
 }
 
@@ -165,7 +167,7 @@ function updateLine(actionName) {
         newRowElement.setAttribute('v-for', '(item, rowIndex) in lines');
         newRowElement.setAttribute(':key', 'item.id');
         newRowElement.setAttribute(':class', '{ "selected": selectedRowIndex.includes(rowIndex) }');
-        newRowElement.setAttribute('@click', 'selectRow(rowIndex)');
+        // newRowElement.setAttribute('@click', 'selectRow(rowIndex)');
 
         // Add <td> elements to the new row for each column/header
         lineHeader.value.forEach((header) => {
@@ -173,9 +175,9 @@ function updateLine(actionName) {
             newCell.setAttribute('v-for', '(value, header, index) in item');
             newCell.setAttribute(':key', 'header + index');
             newCell.setAttribute(':tabindex', '0');
-            newCell.setAttribute('@click', 'index == 0 ? openCard(value) : null');
+            // newCell.setAttribute('@click', 'index == 0 ? openCard(value) : null');
             newCell.setAttribute(':contenteditable', 'contenteditable');
-            newCell.setAttribute('@blur', 'handleBlur(value, header, rowIndex, item, $event)');
+            // newCell.setAttribute('@blur', 'handleBlur(value, header, rowIndex, item, $event)');
             // Optionally, you can set the initial cell value to the default value you want
             newCell.textContent = newRow[header];
             newRowElement.appendChild(newCell);
@@ -183,6 +185,16 @@ function updateLine(actionName) {
 
         // Append the new <tr> element to the <tbody>
         tableBody.appendChild(newRowElement);
+
+        console.log(lines.value.length);
+        selectRow(lines.value.length - 1);
+
+        this.$nextTick(() => {
+            const newRowElement = document.querySelector('tbody tr:last-child');
+            if (newRowElement) {
+                newRowElement.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+            }
+        });
 
         return;
     }
