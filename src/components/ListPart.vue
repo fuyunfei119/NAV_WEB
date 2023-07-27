@@ -36,6 +36,7 @@ const lines = ref([]);
 const lineHeader = ref({});
 const isRecordLoaded = ref(false);
 const contenteditable = ref(false);
+const newRecord = ref(false);
 
 const tdElement = ref(null);
 
@@ -72,8 +73,6 @@ function selectRow(rowIndex) {
         selectedRowIndex.value = [];
         selectedRowIndex.value[0] = rowIndex;
     }
-
-    console.log(selectedRowIndex.value);
 
     upToDate = true;
 }
@@ -149,14 +148,12 @@ function updateLine(actionName) {
 
         const newRow = {}; // Create an empty object for the new row data
         lineHeader.value.forEach((header) => {
-            // Initialize each column value of the new row to some default value
-            // For example, if your table headers are 'header1', 'header2', ...
-            // you can set the initial values as follows:
             newRow[header] = '';
         });
 
-        // Push the new row data to the lines array
         lines.value.push(newRow);
+
+        newRecord.value = true;
 
         // Optionally, set contenteditable to true for the new row to enable editing
         contenteditable.value = true;
@@ -186,7 +183,6 @@ function updateLine(actionName) {
         // Append the new <tr> element to the <tbody>
         tableBody.appendChild(newRowElement);
 
-        console.log(lines.value.length);
         selectRow(lines.value.length - 1);
 
         this.$nextTick(() => {
@@ -195,6 +191,8 @@ function updateLine(actionName) {
                 newRowElement.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
             }
         });
+
+
 
         return;
     }
@@ -239,6 +237,8 @@ const handleBlur = (value, header, rowIndex, item, event) => {
 
 onBeforeMount(async () => {
 
+    console.log('OnOpenPage');
+
     axios.post('http://localhost:8080/List/OnBeforeMounted', {
         table: 'Customer'
     })
@@ -251,6 +251,8 @@ onBeforeMount(async () => {
 })
 
 onMounted(async () => {
+
+    console.log('OnFindRecord');
 
     axios.get('http://localhost:8080/List/OnMounted', {
         params: {
@@ -273,42 +275,66 @@ onMounted(async () => {
 
 onBeforeUpdate(async () => {
 
+    console.log('OnAfterGetRecord');
+    console.log(newRecord.value);
+
     if (isRecordLoaded.value) {
 
-        axios.post('http://localhost:8080/List/OnBeforeUpdate', {
-            table: 'Customer',
-            records: lines.value,
-            page: 'customerList'
-        })
-            .then(response => {
-                console.log(response.data);
-                lines.value = response.data;
-                lineHeader.value = Object.keys(lines.value[0]);
-                isRecordLoaded.value = !isRecordLoaded.value;
+        if (newRecord) {
+
+            console.log('OnNewRecord');
+
+            axios.post('http://localhost:8080/List/OnNewRecord', {
+                table: 'customer',
+                page: 'customerList'
             })
-            .catch(error => {
-                console.log(error);
-            });
+                .then(response => {
+
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+
+            return;
+        } else {
+            axios.post('http://localhost:8080/List/OnBeforeUpdate', {
+                table: 'Customer',
+                records: lines.value,
+                page: 'customerList'
+            })
+                .then(response => {
+                    console.log(response.data);
+                    lines.value = response.data;
+                    lineHeader.value = Object.keys(lines.value[0]);
+                    isRecordLoaded.value = !isRecordLoaded.value;
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        }
     }
 })
 
 onUpdated(async () => {
 
-    if (!isRecordLoaded.value && upToDate) {
+    // console.log('OnAfterGetCurrRecord');
+    // console.log(newRecord.value);
 
-        axios.post('http://localhost:8080/List/OnUpdated', {
-            table: 'Customer',
-            record: lines.value[selectedRowIndex.value.at(0)],
-            page: 'customerList'
-        })
-            .then(response => {
-                lines.value[selectedRowIndex.value.at(0)] = response.data;
-                upToDate = false;
-            })
-            .catch(error => {
-                console.log(error);
-            });
-    }
+    // if (!isRecordLoaded.value && upToDate) {
+
+    //     axios.post('http://localhost:8080/List/OnUpdated', {
+    //         table: 'Customer',
+    //         record: lines.value[selectedRowIndex.value.at(0)],
+    //         page: 'customerList'
+    //     })
+    //         .then(response => {
+    //             lines.value[selectedRowIndex.value.at(0)] = response.data;
+    //             upToDate = false;
+    //         })
+    //         .catch(error => {
+    //             console.log(error);
+    //         });
+    // }
 })
 
 onBeforeUnmount(async () => {
