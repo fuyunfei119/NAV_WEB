@@ -37,6 +37,7 @@ const lineHeader = ref({});
 const isRecordLoaded = ref(false);
 const contenteditable = ref(false);
 const newRecord = ref(false);
+const newRecordIndex = ref(0);
 
 const tdElement = ref(null);
 
@@ -60,6 +61,25 @@ const openCard = (RecordID) => {
 }
 
 function selectRow(rowIndex) {
+
+    if (newRecord.value) {
+        console.log("OnInsertRecord");
+
+        console.log(newRecordIndex.value);
+        console.log(lines.value[newRecordIndex.value]);
+
+        axios.post('http://localhost:8080/List/OnInsertRecord', {
+            table: 'customer',
+            page: 'customerList',
+            record: lines.value[newRecordIndex.value]
+        })
+            .then(response => {
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+
     if (shiftPressed) {
         if (selectedRowIndex.value[selectedRowIndex.value.length - 1] + 1 != rowIndex) {
             for (let index = Math.max(...selectedRowIndex.value) + 1; index < rowIndex + 1; index++) {
@@ -146,20 +166,12 @@ function updateLine(actionName) {
         return;
     } else if (actionName === 'New') {
 
-        console.log('New...');
-
         const newRow = {}; // Create an empty object for the new row data
         lineHeader.value.forEach((header) => {
             newRow[header] = '';
         });
 
         lines.value.push(newRow);
-
-        newRecord.value = true;
-        isRecordLoaded.value = !isRecordLoaded.value;
-
-        // Optionally, set contenteditable to true for the new row to enable editing
-        contenteditable.value = true;
 
         // Create a new <tr> element and append it to the <tbody> in the DOM
         const tableBody = document.querySelector('tbody');
@@ -187,6 +199,13 @@ function updateLine(actionName) {
         tableBody.appendChild(newRowElement);
 
         selectRow(lines.value.length - 1);
+        newRecordIndex.value = lines.value.length - 1;
+
+        newRecord.value = true;
+        isRecordLoaded.value = !isRecordLoaded.value;
+
+        // Optionally, set contenteditable to true for the new row to enable editing
+        contenteditable.value = true;
 
         this.$nextTick(() => {
             const newRowElement = document.querySelector('tbody tr:last-child');
@@ -237,8 +256,6 @@ const handleBlur = (value, header, rowIndex, item, event) => {
 
 onBeforeMount(async () => {
 
-    console.log('OnOpenPage');
-
     axios.post('http://localhost:8080/List/OnBeforeMounted', {
         table: 'Customer'
     })
@@ -251,8 +268,6 @@ onBeforeMount(async () => {
 })
 
 onMounted(async () => {
-
-    console.log('OnFindRecord');
 
     axios.get('http://localhost:8080/List/OnMounted', {
         params: {
@@ -275,20 +290,15 @@ onMounted(async () => {
 
 onBeforeUpdate(async () => {
 
-    console.log('OnAfterGetRecord');
-
     if (isRecordLoaded.value) {
 
         if (newRecord.value) {
-
-            console.log('OnNewRecord');
 
             axios.post('http://localhost:8080/List/OnNewRecord', {
                 table: 'customer',
                 page: 'customerList'
             })
                 .then(response => {
-                    console.log(response.data);
                     lines.value[lastLineIndex.value] = response.data;
                     isRecordLoaded.value = !isRecordLoaded.value;
                 })
