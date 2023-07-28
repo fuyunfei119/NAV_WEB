@@ -37,6 +37,7 @@ const lineHeader = ref({});
 const isRecordLoaded = ref(false);
 const contenteditable = ref(false);
 const newRecord = ref(false);
+const InsertRecord = ref(false);
 const newRecordIndex = ref(0);
 
 const tdElement = ref(null);
@@ -62,11 +63,9 @@ const openCard = (RecordID) => {
 
 function selectRow(rowIndex) {
 
-    if (newRecord.value) {
-        console.log("OnInsertRecord");
+    if (newRecord.value && InsertRecord.value || newRecord.value && rowIndex != selectedRowIndex.value) {
 
-        console.log(newRecordIndex.value);
-        console.log(lines.value[newRecordIndex.value]);
+        console.log("OnInsertRecord");
 
         axios.post('http://localhost:8080/List/OnInsertRecord', {
             table: 'customer',
@@ -74,6 +73,8 @@ function selectRow(rowIndex) {
             record: lines.value[newRecordIndex.value]
         })
             .then(response => {
+                newRecord.value = !newRecord.value;
+                InsertRecord.value = !InsertRecord.value;
             })
             .catch(error => {
                 console.log(error);
@@ -117,6 +118,10 @@ function handleKeydown(event) {
 function handleArrowDown() {
     if (selectedRowIndex.value.includes(lastLineIndex.value)) return;
 
+    if (newRecord.value) {
+        InsertRecord.value = !InsertRecord.value;
+    }
+
     if (!shiftPressed) {
         selectRow(selectedRowIndex.value[0] + 1);
     } else {
@@ -128,6 +133,10 @@ function handleArrowDown() {
 
 function handleArrowUp() {
     if (selectedRowIndex.value.includes(0)) return;
+
+    if (newRecord.value) {
+        InsertRecord.value = !InsertRecord.value;
+    }
 
     if (!shiftPressed) {
         selectRow(selectedRowIndex.value[0] - 1);
@@ -173,39 +182,43 @@ function updateLine(actionName) {
 
         lines.value.push(newRow);
 
-        // Create a new <tr> element and append it to the <tbody> in the DOM
-        const tableBody = document.querySelector('tbody');
-        const newRowElement = document.createElement('tr');
-        newRowElement.setAttribute('v-for', '(item, rowIndex) in lines');
-        newRowElement.setAttribute(':key', 'item.id');
-        newRowElement.setAttribute(':class', '{ "selected": selectedRowIndex.includes(rowIndex) }');
-        // newRowElement.setAttribute('@click', 'selectRow(rowIndex)');
+        // // Create a new <tr> element and append it to the <tbody> in the DOM
+        // const tableBody = document.querySelector('tbody');
+        // const newRowElement = document.createElement('tr');
+        // newRowElement.setAttribute('v-for', '(item, rowIndex) in lines');
+        // newRowElement.setAttribute(':key', 'item.id');
+        // newRowElement.setAttribute(':class', '{ "selected": selectedRowIndex.includes(rowIndex) }');
+        // // newRowElement.setAttribute('@click', 'selectRow(rowIndex)');
 
-        // Add <td> elements to the new row for each column/header
-        lineHeader.value.forEach((header) => {
-            const newCell = document.createElement('td');
-            newCell.setAttribute('v-for', '(value, header, index) in item');
-            newCell.setAttribute(':key', 'header + index');
-            newCell.setAttribute(':tabindex', '0');
-            // newCell.setAttribute('@click', 'index == 0 ? openCard(value) : null');
-            newCell.setAttribute(':contenteditable', 'contenteditable');
-            // newCell.setAttribute('@blur', 'handleBlur(value, header, rowIndex, item, $event)');
-            // Optionally, you can set the initial cell value to the default value you want
-            newCell.textContent = newRow[header];
-            newRowElement.appendChild(newCell);
-        });
+        // // Add <td> elements to the new row for each column/header
+        // lineHeader.value.forEach((header) => {
+        //     const newCell = document.createElement('td');
+        //     newCell.setAttribute('v-for', '(value, header, index) in item');
+        //     newCell.setAttribute(':key', 'header + index');
+        //     newCell.setAttribute(':tabindex', '0');
+        //     // newCell.setAttribute('@click', 'index == 0 ? openCard(value) : null');
+        //     newCell.setAttribute(':contenteditable', 'contenteditable');
+        //     // newCell.setAttribute('@blur', 'handleBlur(value, header, rowIndex, item, $event)');
+        //     // Optionally, you can set the initial cell value to the default value you want
+        //     newCell.textContent = newRow[header];
+        //     newRowElement.appendChild(newCell);
+        // });
 
-        // Append the new <tr> element to the <tbody>
-        tableBody.appendChild(newRowElement);
+        // // Append the new <tr> element to the <tbody>
+        // tableBody.appendChild(newRowElement);
 
         selectRow(lines.value.length - 1);
+
         newRecordIndex.value = lines.value.length - 1;
 
         newRecord.value = true;
         isRecordLoaded.value = !isRecordLoaded.value;
 
-        // Optionally, set contenteditable to true for the new row to enable editing
         contenteditable.value = true;
+
+
+        // Optionally, set contenteditable to true for the new row to enable editing
+
 
         this.$nextTick(() => {
             const newRowElement = document.querySelector('tbody tr:last-child');
@@ -293,6 +306,8 @@ onBeforeUpdate(async () => {
     if (isRecordLoaded.value) {
 
         if (newRecord.value) {
+
+            console.log("OnNewRecord");
 
             axios.post('http://localhost:8080/List/OnNewRecord', {
                 table: 'customer',
