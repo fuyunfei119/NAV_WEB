@@ -146,6 +146,8 @@ function updateLine(actionName) {
         return;
     } else if (actionName === 'New') {
 
+        console.log('New...');
+
         const newRow = {}; // Create an empty object for the new row data
         lineHeader.value.forEach((header) => {
             newRow[header] = '';
@@ -154,6 +156,7 @@ function updateLine(actionName) {
         lines.value.push(newRow);
 
         newRecord.value = true;
+        isRecordLoaded.value = !isRecordLoaded.value;
 
         // Optionally, set contenteditable to true for the new row to enable editing
         contenteditable.value = true;
@@ -192,8 +195,6 @@ function updateLine(actionName) {
             }
         });
 
-
-
         return;
     }
 
@@ -227,7 +228,6 @@ const handleBlur = (value, header, rowIndex, item, event) => {
         record: item
     })
         .then(response => {
-            console.log(lines.value[rowIndex]);
             lines.value[rowIndex] = response.data;
         })
         .catch(error => {
@@ -276,11 +276,10 @@ onMounted(async () => {
 onBeforeUpdate(async () => {
 
     console.log('OnAfterGetRecord');
-    console.log(newRecord.value);
 
     if (isRecordLoaded.value) {
 
-        if (newRecord) {
+        if (newRecord.value) {
 
             console.log('OnNewRecord');
 
@@ -289,7 +288,9 @@ onBeforeUpdate(async () => {
                 page: 'customerList'
             })
                 .then(response => {
-
+                    console.log(response.data);
+                    lines.value[lastLineIndex.value] = response.data;
+                    isRecordLoaded.value = !isRecordLoaded.value;
                 })
                 .catch(error => {
                     console.log(error);
@@ -303,7 +304,6 @@ onBeforeUpdate(async () => {
                 page: 'customerList'
             })
                 .then(response => {
-                    console.log(response.data);
                     lines.value = response.data;
                     lineHeader.value = Object.keys(lines.value[0]);
                     isRecordLoaded.value = !isRecordLoaded.value;
