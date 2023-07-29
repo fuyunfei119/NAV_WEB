@@ -10,10 +10,12 @@
                 </thead>
                 <tbody>
                     <tr v-for="(item, rowIndex) in lines" :key="item.id"
-                        :class="{ 'selected': selectedRowIndex.includes(rowIndex) }" @click="selectRow(rowIndex)">
-                        <td v-for="(value, header, index) in item" :key="header + index" :tabindex="0"
-                            @click=" index == 0 ? openCard(value) : null" :contenteditable="contenteditable"
-                            @blur="handleBlur(value, header, rowIndex, item, $event)" ref="tdElement">
+                        :class="{ 'selected': selectedRowIndex.includes(rowIndex) }" @click="selectRow(rowIndex, item)">
+                        <td v-for="(value, header, index) in item" :key="header + index"
+                            :tabindex="selectedRowIndex.includes(rowIndex) ? 0 : -1"
+                            @click=" index == 0 ? openCard(value) : selectInput(header, index, rowIndex)"
+                            :contenteditable="contenteditable" @blur="handleBlur(value, header, rowIndex, item, $event)"
+                            ref="tdElement">
                             {{ value }}
                         </td>
                     </tr>
@@ -24,11 +26,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, computed, defineExpose } from 'vue';
+import { ref, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, computed, defineExpose, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Card from './Card.vue';
-
+const rowCount = computed(() => lineHeader.value.length);
 const expand = computed(() => lineHeader.value.length > 6);
 const lastLineIndex = computed(() => lines.value.length - 1);
 
@@ -40,9 +42,10 @@ const newRecord = ref(false);
 const InsertRecord = ref(false);
 const newRecordIndex = ref(0);
 
-const tdElement = ref(null);
+const tdElement = ref();
 
 const selectedRowIndex = ref([0]);
+const selectedInputIndex = ref(0);
 let upToDate = false;
 let shiftPressed = false;
 const keys = ['ArrowDown', 'ArrowUp', 'Shift'];
@@ -59,6 +62,11 @@ const openCard = (RecordID) => {
             },
         },
     )
+}
+
+function selectInput(header, index, rowIndex) {
+    selectedInputIndex.value = ((rowIndex) * rowCount.value) + index;
+    console.log(selectedInputIndex.value);
 }
 
 function selectRow(rowIndex) {
@@ -124,11 +132,16 @@ function handleArrowDown() {
 
     if (!shiftPressed) {
         selectRow(selectedRowIndex.value[0] + 1);
+        selectedInputIndex.value -= rowCount.value;
+        tdElement.value[selectedInputIndex.value].focus();
     } else {
         if (!selectedRowIndex.value.includes(Math.max(...selectedRowIndex.value) + 1)) {
             selectedRowIndex.value.push(Math.max(...selectedRowIndex.value) + 1);
         }
     }
+
+    selectedInputIndex.value += rowCount.value;
+    console.log(selectedInputIndex.value);
 }
 
 function handleArrowUp() {
@@ -140,6 +153,8 @@ function handleArrowUp() {
 
     if (!shiftPressed) {
         selectRow(selectedRowIndex.value[0] - 1);
+        selectedInputIndex.value -= rowCount.value;
+        tdElement.value[selectedInputIndex.value].focus();
     } else {
         if (!selectedRowIndex.value.includes(Math.min(...selectedRowIndex.value) - 1)) {
             selectedRowIndex.value.push(Math.min(...selectedRowIndex.value) - 1);
@@ -212,15 +227,12 @@ function updateLine(actionName) {
         newRecordIndex.value = lines.value.length - 1;
 
         newRecord.value = true;
+
         isRecordLoaded.value = !isRecordLoaded.value;
 
         contenteditable.value = true;
 
-
-        // Optionally, set contenteditable to true for the new row to enable editing
-
-
-        this.$nextTick(() => {
+        nextTick(() => {
             const newRowElement = document.querySelector('tbody tr:last-child');
             if (newRowElement) {
                 newRowElement.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
@@ -417,8 +429,8 @@ tbody>tr {
 }
 
 tr:hover {
-    background-color: var(--Accent);
-    color: aliceblue;
+    background-color: grey;
+    color: white;
 }
 
 tr {
