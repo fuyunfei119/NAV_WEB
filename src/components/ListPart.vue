@@ -132,16 +132,13 @@ function handleArrowDown() {
 
     if (!shiftPressed) {
         selectRow(selectedRowIndex.value[0] + 1);
-        selectedInputIndex.value -= rowCount.value;
+        selectedInputIndex.value += rowCount.value;
         tdElement.value[selectedInputIndex.value].focus();
     } else {
         if (!selectedRowIndex.value.includes(Math.max(...selectedRowIndex.value) + 1)) {
             selectedRowIndex.value.push(Math.max(...selectedRowIndex.value) + 1);
         }
     }
-
-    selectedInputIndex.value += rowCount.value;
-    console.log(selectedInputIndex.value);
 }
 
 function handleArrowUp() {
