@@ -48,7 +48,7 @@ const selectedRowIndex = ref([0]);
 const selectedInputIndex = ref(0);
 let upToDate = false;
 let shiftPressed = false;
-const keys = ['ArrowDown', 'ArrowUp', 'Shift'];
+const keys = ['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft', 'Shift'];
 
 const router = useRouter();
 const openCard = (RecordID) => {
@@ -66,7 +66,6 @@ const openCard = (RecordID) => {
 
 function selectInput(header, index, rowIndex) {
     selectedInputIndex.value = ((rowIndex) * rowCount.value) + index;
-    console.log(selectedInputIndex.value);
 }
 
 function selectRow(rowIndex) {
@@ -116,6 +115,12 @@ function handleKeydown(event) {
             case "ArrowUp":
                 handleArrowUp();
                 break;
+            case "ArrowRight":
+                handleArrowRight();
+                break;
+            case "ArrowLeft":
+                handleArrowLeft();
+                break;
             case "Shift":
                 handleShift(event);
                 break;
@@ -124,6 +129,8 @@ function handleKeydown(event) {
 }
 
 function handleArrowDown() {
+    event.preventDefault();
+
     if (selectedRowIndex.value.includes(lastLineIndex.value)) return;
 
     if (newRecord.value) {
@@ -142,6 +149,8 @@ function handleArrowDown() {
 }
 
 function handleArrowUp() {
+    event.preventDefault();
+
     if (selectedRowIndex.value.includes(0)) return;
 
     if (newRecord.value) {
@@ -156,6 +165,28 @@ function handleArrowUp() {
         if (!selectedRowIndex.value.includes(Math.min(...selectedRowIndex.value) - 1)) {
             selectedRowIndex.value.push(Math.min(...selectedRowIndex.value) - 1);
         }
+    }
+}
+
+function handleArrowRight() {
+    if (selectedInputIndex.value === tdElement.value.length - 1) return;
+
+    selectedInputIndex.value += 1;
+
+    tdElement.value[selectedInputIndex.value].focus();
+    if (selectedInputIndex.value >= (selectedRowIndex.value * rowCount.value + rowCount.value)) {
+        selectRow(selectedRowIndex.value[0] + 1);
+    }
+}
+
+function handleArrowLeft() {
+    if (selectedInputIndex.value === 0) return;
+
+    selectedInputIndex.value -= 1;
+
+    tdElement.value[selectedInputIndex.value].focus();
+    if (selectedInputIndex.value < selectedRowIndex.value * rowCount.value) {
+        selectRow(selectedRowIndex.value[0] - 1);
     }
 }
 
@@ -193,31 +224,6 @@ function updateLine(actionName) {
         });
 
         lines.value.push(newRow);
-
-        // // Create a new <tr> element and append it to the <tbody> in the DOM
-        // const tableBody = document.querySelector('tbody');
-        // const newRowElement = document.createElement('tr');
-        // newRowElement.setAttribute('v-for', '(item, rowIndex) in lines');
-        // newRowElement.setAttribute(':key', 'item.id');
-        // newRowElement.setAttribute(':class', '{ "selected": selectedRowIndex.includes(rowIndex) }');
-        // // newRowElement.setAttribute('@click', 'selectRow(rowIndex)');
-
-        // // Add <td> elements to the new row for each column/header
-        // lineHeader.value.forEach((header) => {
-        //     const newCell = document.createElement('td');
-        //     newCell.setAttribute('v-for', '(value, header, index) in item');
-        //     newCell.setAttribute(':key', 'header + index');
-        //     newCell.setAttribute(':tabindex', '0');
-        //     // newCell.setAttribute('@click', 'index == 0 ? openCard(value) : null');
-        //     newCell.setAttribute(':contenteditable', 'contenteditable');
-        //     // newCell.setAttribute('@blur', 'handleBlur(value, header, rowIndex, item, $event)');
-        //     // Optionally, you can set the initial cell value to the default value you want
-        //     newCell.textContent = newRow[header];
-        //     newRowElement.appendChild(newCell);
-        // });
-
-        // // Append the new <tr> element to the <tbody>
-        // tableBody.appendChild(newRowElement);
 
         selectRow(lines.value.length - 1);
 
@@ -426,8 +432,8 @@ tbody>tr {
 }
 
 tr:hover {
-    background-color: grey;
-    color: white;
+    background-color: rgb(241, 241, 241);
+    color: black;
 }
 
 tr {
