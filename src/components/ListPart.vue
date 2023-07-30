@@ -359,24 +359,21 @@ onBeforeUpdate(async () => {
 
 onUpdated(async () => {
 
-    // console.log('OnAfterGetCurrRecord');
-    // console.log(newRecord.value);
+    if (!isRecordLoaded.value && upToDate) {
 
-    // if (!isRecordLoaded.value && upToDate) {
-
-    //     axios.post('http://localhost:8080/List/OnUpdated', {
-    //         table: 'Customer',
-    //         record: lines.value[selectedRowIndex.value.at(0)],
-    //         page: 'customerList'
-    //     })
-    //         .then(response => {
-    //             lines.value[selectedRowIndex.value.at(0)] = response.data;
-    //             upToDate = false;
-    //         })
-    //         .catch(error => {
-    //             console.log(error);
-    //         });
-    // }
+        axios.post('http://localhost:8080/List/OnUpdated', {
+            table: 'Customer',
+            record: lines.value[selectedRowIndex.value.at(0)],
+            page: 'customerList'
+        })
+            .then(response => {
+                lines.value[selectedRowIndex.value.at(0)] = response.data;
+                upToDate = false;
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
 })
 
 onBeforeUnmount(async () => {
