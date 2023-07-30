@@ -191,6 +191,7 @@ function handleArrowLeft() {
 }
 
 function handleShift(event) {
+    event.preventDefault();
     if (event.shiftKey) {
         shiftPressed = true;
     }
@@ -216,9 +217,38 @@ function updateLine(actionName) {
     if (actionName === 'Edit') {
         contenteditable.value = !contenteditable.value;
         return;
+    } else if (actionName === 'Delete') {
+        axios.post('http://localhost:8080/List/DeleteLine', {
+            table: 'customer',
+            record: lines.value[selectedRowIndex.value]
+        })
+            .then(response => {
+                if (response.data) {
+                    axios.post('http://localhost:8080/List/OnBeforeUpdate', {
+                        table: 'Customer',
+                        records: lines.value,
+                        page: 'customerList'
+                    })
+                        .then(response => {
+                            if (response.data) {
+                                lines.value = lines.value.filter((item, index) => !selectedRowIndex.value.includes(index));
+                                console.log(lines.value);
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        });
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            });
+
+
+        return;
     } else if (actionName === 'New') {
 
-        const newRow = {}; // Create an empty object for the new row data
+        const newRow = {};
         lineHeader.value.forEach((header) => {
             newRow[header] = '';
         });
@@ -245,18 +275,18 @@ function updateLine(actionName) {
         });
 
         return;
-    }
-
-    axios.post('http://localhost:8080/List/OnBeforeUpdate', {
-        table: 'Customer',
-        records: lines.value
-    })
-        .then(response => {
-            lines.value = response.data;
+    } else {
+        axios.post('http://localhost:8080/List/OnBeforeUpdate', {
+            table: 'Customer',
+            records: lines.value
         })
-        .catch(error => {
-            console.log(error);
-        });
+            .then(response => {
+                lines.value = response.data;
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
 }
 
 
@@ -323,8 +353,6 @@ onBeforeUpdate(async () => {
     if (isRecordLoaded.value) {
 
         if (newRecord.value) {
-
-            console.log("OnNewRecord");
 
             axios.post('http://localhost:8080/List/OnNewRecord', {
                 table: 'customer',
