@@ -235,6 +235,8 @@ function updateLine(actionName) {
 
         contenteditable.value = true;
 
+        selectedInputIndex.value = tdElement.value.length - rowCount.value;
+
         nextTick(() => {
             const newRowElement = document.querySelector('tbody tr:last-child');
             if (newRowElement) {
