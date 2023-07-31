@@ -138,9 +138,15 @@ function handleArrowDown() {
     }
 
     if (!shiftPressed) {
-        selectRow(selectedRowIndex.value[0] + 1);
-        selectedInputIndex.value += rowCount.value;
-        tdElement.value[selectedInputIndex.value].focus();
+        if (!newRecord.value) {
+            selectRow(selectedRowIndex.value[0] + 1);
+            selectedInputIndex.value += rowCount.value;
+            tdElement.value[selectedInputIndex.value].focus();
+        }else {
+            selectRow(selectedRowIndex.value[0] + 1);
+            tdElement.value[selectedInputIndex.value].focus();
+        }
+
     } else {
         if (!selectedRowIndex.value.includes(Math.max(...selectedRowIndex.value) + 1)) {
             selectedRowIndex.value.push(Math.max(...selectedRowIndex.value) + 1);
@@ -158,9 +164,15 @@ function handleArrowUp() {
     }
 
     if (!shiftPressed) {
-        selectRow(selectedRowIndex.value[0] - 1);
-        selectedInputIndex.value -= rowCount.value;
-        tdElement.value[selectedInputIndex.value].focus();
+
+        if (!newRecord.value) {
+            selectRow(selectedRowIndex.value[0] - 1);
+            selectedInputIndex.value -= rowCount.value;
+            tdElement.value[selectedInputIndex.value].focus();
+        }else {
+            selectRow(selectedRowIndex.value[0] - 1);
+            tdElement.value[selectedInputIndex.value].focus();
+        }
     } else {
         if (!selectedRowIndex.value.includes(Math.min(...selectedRowIndex.value) - 1)) {
             selectedRowIndex.value.push(Math.min(...selectedRowIndex.value) - 1);
@@ -253,6 +265,8 @@ function updateLine(actionName) {
             newRow[header] = '';
         });
 
+        console.log(newRow);
+
         lines.value.push(newRow);
 
         selectRow(lines.value.length - 1);
@@ -291,9 +305,10 @@ function updateLine(actionName) {
 
 
 const handleBlur = (value, header, rowIndex, item, event) => {
+
     const newValue = event.target.innerText;
 
-    if (value == newValue) {
+    if (value == newValue || !value && !newValue) {
         return;
     }
 
@@ -304,9 +319,11 @@ const handleBlur = (value, header, rowIndex, item, event) => {
         newValue: newValue,
         field: header,
         rowIndex: rowIndex,
-        record: item
+        record: item,
+        newRecord: newRecord.value
     })
         .then(response => {
+            // console.log(response.data);
             lines.value[rowIndex] = response.data;
         })
         .catch(error => {
@@ -328,6 +345,8 @@ onBeforeMount(async () => {
 })
 
 onMounted(async () => {
+
+    console.log("OnFindRecord");
 
     axios.get('http://localhost:8080/List/OnMounted', {
         params: {
@@ -368,6 +387,9 @@ onBeforeUpdate(async () => {
 
             return;
         } else {
+
+            console.log("OnAfterGetRecord");
+
             axios.post('http://localhost:8080/List/OnBeforeUpdate', {
                 table: 'Customer',
                 records: lines.value,
@@ -388,6 +410,8 @@ onBeforeUpdate(async () => {
 onUpdated(async () => {
 
     if (!isRecordLoaded.value && upToDate) {
+
+        console.log("OnAfterGetCurrRecord");
 
         axios.post('http://localhost:8080/List/OnUpdated', {
             table: 'Customer',
@@ -456,6 +480,10 @@ table {
 thead>tr,
 tbody>tr {
     line-height: 25px;
+}
+
+tbody > tr > td {
+    border-right: 1px solid rgb(178, 177, 177);
 }
 
 tr:hover {
