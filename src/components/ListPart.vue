@@ -230,9 +230,10 @@ function updateLine(actionName) {
         contenteditable.value = !contenteditable.value;
         return;
     } else if (actionName === 'Delete') {
+
         axios.post('http://localhost:8080/List/DeleteLine', {
             table: 'customer',
-            record: lines.value[selectedRowIndex.value]
+            record: selectedRowIndex.value.map(index => ({ ...lines.value[index] }))
         })
             .then(response => {
                 if (response.data) {
@@ -486,9 +487,10 @@ tbody > tr > td {
     border-right: 1px solid rgb(178, 177, 177);
 }
 
-tr:hover {
+table tbody tr:not(.selected):hover {
     background-color: rgb(241, 241, 241);
     color: black;
+    user-select: none;
 }
 
 tr {
