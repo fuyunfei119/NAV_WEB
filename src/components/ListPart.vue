@@ -233,7 +233,7 @@ function updateLine(actionName) {
 
         axios.post('http://localhost:8080/List/DeleteLine', {
             table: 'customer',
-            record: selectedRowIndex.value.map(index => ({ ...lines.value[index] }))
+            records: selectedRowIndex.value.map(index => ({ ...lines.value[index] }))
         })
             .then(response => {
                 if (response.data) {
