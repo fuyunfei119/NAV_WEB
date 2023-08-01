@@ -14,8 +14,8 @@
                         <td v-for="(value, header, index) in item" :key="header + index"
                             :tabindex="selectedRowIndex.includes(rowIndex) ? 0 : -1"
                             @click=" index == 0 ? openCard(value) : selectInput(header, index, rowIndex)"
-                            :contenteditable="contenteditable" @blur="handleBlur(value, header, rowIndex, item, $event)"
-                            ref="tdElement">
+                            :contenteditable="contenteditable"
+                            @blur="updateFieldAfterValidate(value, header, rowIndex, item, $event)" ref="tdElement">
                             {{ value }}
                         </td>
                     </tr>
@@ -30,6 +30,7 @@ import { ref, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmou
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Card from './Card.vue';
+
 const rowCount = computed(() => lineHeader.value.length);
 const expand = computed(() => lineHeader.value.length > 6);
 const lastLineIndex = computed(() => lines.value.length - 1);
@@ -142,7 +143,7 @@ function handleArrowDown() {
             selectRow(selectedRowIndex.value[0] + 1);
             selectedInputIndex.value += rowCount.value;
             tdElement.value[selectedInputIndex.value].focus();
-        }else {
+        } else {
             selectRow(selectedRowIndex.value[0] + 1);
             tdElement.value[selectedInputIndex.value].focus();
         }
@@ -169,7 +170,7 @@ function handleArrowUp() {
             selectRow(selectedRowIndex.value[0] - 1);
             selectedInputIndex.value -= rowCount.value;
             tdElement.value[selectedInputIndex.value].focus();
-        }else {
+        } else {
             selectRow(selectedRowIndex.value[0] - 1);
             tdElement.value[selectedInputIndex.value].focus();
         }
@@ -224,7 +225,7 @@ function handleKeyUp(event) {
     }
 }
 
-function updateLine(actionName) {
+function updateLineAfterAction(actionName) {
 
     if (actionName === 'Edit') {
         contenteditable.value = !contenteditable.value;
@@ -245,7 +246,7 @@ function updateLine(actionName) {
                         .then(response => {
                             if (response.data) {
                                 lines.value = lines.value.filter((item, index) => !selectedRowIndex.value.includes(index));
-                                console.log(lines.value);
+                                selectedRowIndex.value = [0];
                             }
                         })
                         .catch(error => {
@@ -256,7 +257,6 @@ function updateLine(actionName) {
             .catch(error => {
                 console.log(error);
             });
-
 
         return;
     } else if (actionName === 'New') {
@@ -304,8 +304,7 @@ function updateLine(actionName) {
     }
 }
 
-
-const handleBlur = (value, header, rowIndex, item, event) => {
+const updateFieldAfterValidate = (value, header, rowIndex, item, event) => {
 
     const newValue = event.target.innerText;
 
@@ -324,7 +323,6 @@ const handleBlur = (value, header, rowIndex, item, event) => {
         newRecord: newRecord.value
     })
         .then(response => {
-            // console.log(response.data);
             lines.value[rowIndex] = response.data;
         })
         .catch(error => {
@@ -347,7 +345,7 @@ onBeforeMount(async () => {
 
 onMounted(async () => {
 
-    console.log("OnFindRecord");
+    // console.log("OnFindRecord");
 
     axios.get('http://localhost:8080/List/OnMounted', {
         params: {
@@ -389,7 +387,7 @@ onBeforeUpdate(async () => {
             return;
         } else {
 
-            console.log("OnAfterGetRecord");
+            // console.log("OnAfterGetRecord");
 
             axios.post('http://localhost:8080/List/OnBeforeUpdate', {
                 table: 'Customer',
@@ -412,7 +410,7 @@ onUpdated(async () => {
 
     if (!isRecordLoaded.value && upToDate) {
 
-        console.log("OnAfterGetCurrRecord");
+        // console.log("OnAfterGetCurrRecord");
 
         axios.post('http://localhost:8080/List/OnUpdated', {
             table: 'Customer',
@@ -448,7 +446,7 @@ onUnmounted(async () => {
 })
 
 defineExpose({
-    updateLine,
+    updateLine: updateLineAfterAction,
 });
 </script>
 
@@ -483,7 +481,7 @@ tbody>tr {
     line-height: 25px;
 }
 
-tbody > tr > td {
+tbody>tr>td {
     border-right: 1px solid rgb(178, 177, 177);
 }
 

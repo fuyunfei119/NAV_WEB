@@ -31,7 +31,7 @@ let ButtonsToRender = ref(ButtonsOfDefault);
 const emits = defineEmits(['RaiseActionForList']);
 
 const OnRaiseAction = (actionName) => {
-    emits('RaiseActionForList',actionName);
+    emits('RaiseActionForList', actionName);
 }
 
 function RedirectPage(target) {
@@ -98,15 +98,15 @@ function RenderButtons(moduleName) {
 
 const WithSales = () => {
     ButtonsToRender.value = ButtonsOfSales;
-    // axios.post('http://localhost:8080/GetActions', {
-    //     page: 'CustomerList'
-    // })
-    //     .then(response => {
-    //         ButtonsToRender.value = ButtonsOfSales.value;
-    //     })
-    //     .catch(error => {
-    //         console.log(error);
-    //     });
+    axios.post('http://localhost:8080/GetActions', {
+        page: 'CustomerList'
+    })
+        .then(response => {
+            ButtonsToRender.value = [...ButtonsToRender.value, ...response.data];
+        })
+        .catch(error => {
+            console.log(error);
+        });
 }
 
 const WithPurchase = () => {
