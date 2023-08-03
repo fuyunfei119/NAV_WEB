@@ -8,7 +8,7 @@
             <div class="item" v-for="(item, index) in allFields.value" :key="index">
                 <h4>{{ index }}</h4>
                 <hr>
-                <input :type="item.type" @input="updateField(index, $event)" :value="item.value">
+                <input :type="item.type" @input="updateField(index, $event)" :value="item.value" :readonly="editable">
             </div>
         </div>
 
@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { computed, ref, defineProps,defineEmits, onMounted } from 'vue';
+import { computed, ref, defineProps,defineEmits,defineExpose,onMounted } from 'vue';
 
 const props = defineProps({
     fields: Object
@@ -27,9 +27,20 @@ const emits = defineEmits(['UpdateRecord']);
 const groupName = computed(() => ref(props.fields.groupName));
 const allFields = computed(() => ref(props.fields.fields));
 
+const editable = ref(false);
+
+function changeEditable() {
+    editable.value = !editable.value;
+    console.log(editable.value);
+}
+
 const updateField = async (index, value) => {
     emits('UpdateRecord', groupName.value, index, value);
 };
+
+defineExpose({
+   changeEditable
+});
 
 </script>
 

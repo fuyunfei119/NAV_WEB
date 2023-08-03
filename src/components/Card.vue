@@ -2,7 +2,7 @@
 <template>
     <div class="container-Card">
         <CardHeaderBar @UpdateRecordOnBeforeReturnBack="UpdateRecordOnBeforeReturnBack"></CardHeaderBar>
-        <CardControlBar></CardControlBar>
+        <CardControlBar @RaiseActionForCard="RaiseActionForCard"></CardControlBar>
         <CardContent ref="CardContentRef" :newEntity="route.query.newEntity" :RecordID="route.query.Id"></CardContent>
     </div>
 </template>
@@ -20,6 +20,10 @@ const CardContentRef = ref();
 
 const UpdateRecordOnBeforeReturnBack = () => {
     CardContentRef.value.InsertRecord();
+}
+
+function RaiseActionForCard(actionName) {
+    CardContentRef.value.RenderAction(actionName);
 }
 </script>
 

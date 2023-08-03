@@ -1,7 +1,11 @@
 <template>
     <div class="card-content">
         <div v-for="field in fields" :key="field">
-            <CardFields :fields="field" @UpdateRecord="UpdateRecord"></CardFields>
+            <CardFields
+                ref="CardFieldsRef"
+                :fields="field"
+                @UpdateRecord="UpdateRecord">
+            </CardFields>
         </div>
 
         <SubPageLines></SubPageLines>
@@ -21,6 +25,7 @@ const props = defineProps({
 })
 
 const fields = ref([]);
+const CardFieldsRef = ref();
 
 const UpdateRecord = (groupName, index, value) => {
     fields.value.forEach(field => {
@@ -81,6 +86,14 @@ const InsertRecord = async () => {
         });
 }
 
+function OnRenderAction(actionName) {
+    if (actionName === 'Edit') {
+        for (const CardField of CardFieldsRef.value) {
+            CardField.changeEditable();
+        }
+    }
+}
+
 watch(fields, (newfields) => {
 }, { deep: true });
 
@@ -91,13 +104,14 @@ onMounted(async () => {
 })
 
 defineExpose({
-    InsertRecord
+    InsertRecord,
+    RenderAction: OnRenderAction
 })
 </script>
 
 <style scoped>
 .card-content {
-    flex: 15;
+    flex: 30;
     overflow: scroll;
 }
 
