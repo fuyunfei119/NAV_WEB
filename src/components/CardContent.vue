@@ -1,10 +1,7 @@
 <template>
     <div class="card-content">
         <div v-for="field in fields" :key="field">
-            <CardFields
-                ref="CardFieldsRef"
-                :fields="field"
-                @UpdateRecord="UpdateRecord">
+            <CardFields ref="CardFieldsRef" :fields="field" @UpdateRecord="UpdateRecord">
             </CardFields>
         </div>
 
@@ -41,19 +38,6 @@ const GetRecordById = async (RecordID) => {
         cardID: 'customerCard',
         table: 'customer',
         recordID: RecordID
-    })
-        .then(response => {
-            fields.value = response.data;
-        })
-        .catch(error => {
-            console.log(error);
-        });
-}
-
-const InitNewRecord = async () => {
-
-    axios.post('http://localhost:8080/InitNewRecord', {
-        table: 'Customer'
     })
         .then(response => {
             console.log(response.data);
@@ -98,8 +82,6 @@ watch(fields, (newfields) => {
 }, { deep: true });
 
 onMounted(async () => {
-    if (props.newEntity) return InitNewRecord();
-
     GetRecordById(props.RecordID);
 })
 
