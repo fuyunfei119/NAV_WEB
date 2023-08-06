@@ -40,7 +40,9 @@ const GetRecordById = async (RecordID) => {
         recordID: RecordID
     })
         .then(response => {
-            console.log(response.data);
+            response.data.forEach(group => {
+                console.log(group.fields);
+            })
             fields.value = response.data;
         })
         .catch(error => {
@@ -49,6 +51,7 @@ const GetRecordById = async (RecordID) => {
 }
 
 const InsertRecord = async () => {
+
     let final = {};
 
     fields.value.forEach(field => {

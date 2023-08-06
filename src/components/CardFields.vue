@@ -5,10 +5,18 @@
         <hr>
 
         <div class="content">
-            <div class="item" v-for="(item, index) in allFields.value" :key="index">
-                <h4>{{ index }}</h4>
+            <div class="item" v-for="(item, fieldName, index) in allFields.value" :key="fieldName">
+                <h4>{{ fieldName }}</h4>
                 <hr>
-                <input :type="item.type" @input="updateField(index, $event)" :value="item.value" :readonly="editable">
+
+                <div class="input-container">
+                    <select v-if="item.type === 'enumeration'" @click="getFieldOption(item, fieldName)">
+                        <option v-for="option in selectOptions" :key="option">{{ option }}</option>
+                    </select>
+
+                    <input v-else :type="item.type" :value="item.value" :readonly="editable"
+                        @input="updateField(fieldName, $event)" />
+                </div>
             </div>
         </div>
 
@@ -16,7 +24,8 @@
 </template>
 
 <script setup>
-import { computed, ref, defineProps,defineEmits,defineExpose,onMounted } from 'vue';
+import { computed, ref, defineProps, defineEmits, defineExpose, onMounted } from 'vue';
+import axios from 'axios';
 
 const props = defineProps({
     fields: Object
@@ -27,19 +36,44 @@ const emits = defineEmits(['UpdateRecord']);
 const groupName = computed(() => ref(props.fields.groupName));
 const allFields = computed(() => ref(props.fields.fields));
 
+const selectOptions = ref([]);
+
 const editable = ref(false);
+const showSelect = ref(false);
 
 function changeEditable() {
     editable.value = !editable.value;
     console.log(editable.value);
 }
 
-const updateField = async (index, value) => {
-    emits('UpdateRecord', groupName.value, index, value);
+const updateField = async (fieldName, value) => {
+    emits('UpdateRecord', groupName.value, fieldName, value);
 };
 
+const getFieldOption = (item, fieldName) => {
+
+    showSelect.value = !showSelect.value;
+
+    if (showSelect.value) {
+
+        axios.post('http://localhost:8080/Card/GetFieldOptionForCard', {
+            cardID: 'customerCard',
+            table: 'customer',
+            fieldName: fieldName
+        })
+            .then(response => {
+                if (response.data.fieldType === 'enum') {
+                    selectOptions.value = response.data.fieldOptions;
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+}
+
 defineExpose({
-   changeEditable
+    changeEditable
 });
 
 </script>
@@ -69,18 +103,35 @@ h4 {
 }
 
 h5,
-input {
+input,
+select {
     line-height: 28px;
-}
-
-input {
     background: var(--Subordinate);
     border: unset;
-    width: 50%;
+    width: 100%;
+    height: 30px;
 }
 
 .item>hr {
     border: 0.5px dotted grey;
     width: 100px;
+}
+
+.input-container {
+    flex-basis: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.input-container input {
+    width: 100%;
+    margin: 0;
+}
+
+.input-container select {
+    width: 100%;
+    margin: 0;
 }
 </style>

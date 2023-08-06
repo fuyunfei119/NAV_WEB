@@ -12,9 +12,8 @@
                     <tr v-for="(item, rowIndex) in lines" :key="item.id"
                         :class="{ 'selected': selectedRowIndex.includes(rowIndex) }" @click="selectRow(rowIndex, item)">
                         <td v-for="(value, header, index) in item" :key="header + index"
-                            :tabindex="selectedRowIndex.includes(rowIndex) ? 0 : -1"
+                            :tabindex="selectedRowIndex.includes(rowIndex) ? 0 : -1" :contenteditable="contenteditable"
                             @click=" index == 0 ? openCard(value) : selectInput(header, index, rowIndex)"
-                            :contenteditable="contenteditable"
                             @blur="updateFieldAfterValidate(value, header, rowIndex, item, $event)" ref="tdElement">
                             {{ value }}
                         </td>
@@ -26,10 +25,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, computed, defineExpose, nextTick } from 'vue';
+import { ref, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, computed, defineExpose, nextTick, defineProps } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Card from './Card.vue';
+
+const props = defineProps({
+    listName: String
+})
+
+const tableName = props.listName;
 
 const rowCount = computed(() => lineHeader.value.length);
 const expand = computed(() => lineHeader.value.length > 6);
@@ -333,7 +338,7 @@ const updateFieldAfterValidate = (value, header, rowIndex, item, event) => {
 onBeforeMount(async () => {
 
     axios.post('http://localhost:8080/List/OnBeforeMounted', {
-        table: 'Customer'
+        table: tableName
     })
         .then(response => {
 
@@ -349,7 +354,7 @@ onMounted(async () => {
 
     axios.get('http://localhost:8080/List/OnMounted', {
         params: {
-            list: 'Customer'
+            list: tableName
         }
     })
         .then(response => {
@@ -373,7 +378,7 @@ onBeforeUpdate(async () => {
         if (newRecord.value) {
 
             axios.post('http://localhost:8080/List/OnNewRecord', {
-                table: 'customer',
+                table: tableName,
                 page: 'customerList'
             })
                 .then(response => {
@@ -390,7 +395,7 @@ onBeforeUpdate(async () => {
             // console.log("OnAfterGetRecord");
 
             axios.post('http://localhost:8080/List/OnBeforeUpdate', {
-                table: 'Customer',
+                table: tableName,
                 records: lines.value,
                 page: 'customerList'
             })
@@ -413,7 +418,7 @@ onUpdated(async () => {
         // console.log("OnAfterGetCurrRecord");
 
         axios.post('http://localhost:8080/List/OnUpdated', {
-            table: 'Customer',
+            table: tableName,
             record: lines.value[selectedRowIndex.value.at(0)],
             page: 'customerList'
         })
@@ -430,7 +435,7 @@ onUpdated(async () => {
 onBeforeUnmount(async () => {
 
     axios.post('http://localhost:8080/List/OnBeforeUnmount', {
-        table: 'Customer'
+        table: tableName
     })
         .then(response => {
 

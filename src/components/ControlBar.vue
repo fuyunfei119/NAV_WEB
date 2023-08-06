@@ -40,7 +40,10 @@ function RedirectPage(target) {
             router.push({
                 path: '/list',
                 name: 'list',
-                component: List
+                component: List,
+                query: {
+                    listName: 'Customer'
+                }
             })
             break;
         case module.PURCHASING:
