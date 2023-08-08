@@ -2,7 +2,7 @@
     <div class="container-controlbar">
 
         <span @click="RenderButtons()" class="table-name">
-            Customer
+            {{ props.listName }}
         </span>
 
         <div @click="RedirectPage(item)" v-for="(item, index) in ButtonsToRender" :key="index" class="buttons-controlbar">
@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { ref, defineExpose, defineEmits } from 'vue';
+import { ref, defineExpose, defineEmits, defineProps } from 'vue';
 import module from '../components/types/Module'
 import List from './List.vue';
 import { useRouter } from 'vue-router';
@@ -20,6 +20,9 @@ import Card from './Card.vue';
 import axios from 'axios';
 
 const router = useRouter();
+const props = defineProps({
+    listName: String
+})
 
 const ButtonsOfDefault = ["Search", "New", "Delete", "Edit"];
 const ButtonsOfSales = ["Customer", "Sales Orders", "Sales Invoices", "Sales Shipments", "Reminders", "Sales Journals", "Return Orders"];

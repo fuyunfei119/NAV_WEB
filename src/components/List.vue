@@ -1,7 +1,8 @@
 <template>
     <NavBar></NavBar>
     <SubNav @OnChangeControlBar="OnChangeControlBar"></SubNav>
-    <ControlBarVue @RaiseActionForList="RaiseActionForList" ref="ControlBarRef"></ControlBarVue>
+    <ControlBarVue :listName="route.query.listName" @RaiseActionForList="RaiseActionForList" ref="ControlBarRef">
+    </ControlBarVue>
     <ListPart ref="ListPartRef" :listName="route.query.listName"></ListPart>
 </template>
 
