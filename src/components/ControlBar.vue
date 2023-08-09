@@ -25,10 +25,10 @@ const props = defineProps({
 })
 
 const ButtonsOfDefault = ["Search", "New", "Delete", "Edit"];
-const ButtonsOfSales = ["Customer", "Sales Orders", "Sales Invoices", "Sales Shipments", "Reminders", "Sales Journals", "Return Orders"];
+const ButtonsOfSales = ["customerList", "Sales Orders", "Sales Invoices", "Sales Shipments", "Reminders", "Sales Journals", "Return Orders"];
 const ButtonsOfPurchase = ["Vendor", "Purchase Orders", "Purchase Invoices", "Purchase Shipment", "Reminders", "Purchase Journals", "Return Purchase"];
 const ButtonsOfDocument = ["Posted Sales Invoices", "Posted Sales Shipments", "Posted Purchase Invoices", "Posted Purchase Shipments", "Issued Reminders", "Sales Order Archives", "Purchase Order Archives"];
-const ButtonsOfInventory = ["Items", "Item Journals", "Locations", "Item ", "Item Tracking", "Drop Shipment"]
+const ButtonsOfInventory = ["Items", "Item Journals", "Locations", "Item", "Item Tracking", "Drop Shipment"]
 let ButtonsToRender = ref(ButtonsOfDefault);
 
 const emits = defineEmits(['RaiseActionForList']);
@@ -39,13 +39,13 @@ const OnRaiseAction = (actionName) => {
 
 function RedirectPage(target) {
     switch (target) {
-        case 'Customer':
+        case 'customerList':
             router.push({
                 path: '/list',
                 name: 'list',
                 component: List,
                 query: {
-                    listName: 'Customer'
+                    listName: 'customerList'
                 }
             })
             break;

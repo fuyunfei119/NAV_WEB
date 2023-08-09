@@ -25,16 +25,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, computed, defineExpose, nextTick, defineProps } from 'vue';
+import { ref, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, computed, defineExpose, nextTick, defineProps, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Card from './Card.vue';
 
 const props = defineProps({
     listName: String
-})
+});
 
-const tableName = props.listName;
+const tableName = ref('');
 
 const rowCount = computed(() => lineHeader.value.length);
 const expand = computed(() => lineHeader.value.length > 6);
@@ -81,8 +81,8 @@ function selectRow(rowIndex) {
         console.log("OnInsertRecord");
 
         axios.post('http://localhost:8080/List/OnInsertRecord', {
-            table: 'customer',
-            page: 'customerList',
+            table: tableName,
+            page: pageName,
             record: lines.value[newRecordIndex.value]
         })
             .then(response => {
@@ -238,15 +238,15 @@ function updateLineAfterAction(actionName) {
     } else if (actionName === 'Delete') {
 
         axios.post('http://localhost:8080/List/DeleteLine', {
-            table: 'customer',
+            table: tableName,
             records: selectedRowIndex.value.map(index => ({ ...lines.value[index] }))
         })
             .then(response => {
                 if (response.data) {
                     axios.post('http://localhost:8080/List/OnBeforeUpdate', {
-                        table: 'Customer',
+                        table: tableName,
                         records: lines.value,
-                        page: 'customerList'
+                        page: pageName
                     })
                         .then(response => {
                             if (response.data) {
@@ -297,7 +297,7 @@ function updateLineAfterAction(actionName) {
         return;
     } else {
         axios.post('http://localhost:8080/List/OnBeforeUpdate', {
-            table: 'Customer',
+            table: tableName,
             records: lines.value
         })
             .then(response => {
@@ -318,8 +318,8 @@ const updateFieldAfterValidate = (value, header, rowIndex, item, event) => {
     }
 
     axios.post('http://localhost:8080/List/PageFieldValidate', {
-        table: 'Customer',
-        page: 'customerList',
+        table: tableName,
+        page: pageName,
         currentValue: value,
         newValue: newValue,
         field: header,
@@ -337,11 +337,12 @@ const updateFieldAfterValidate = (value, header, rowIndex, item, event) => {
 
 onBeforeMount(async () => {
 
-    axios.post('http://localhost:8080/List/OnBeforeMounted', {
-        table: tableName
+    await axios.post('http://localhost:8080/List/OnBeforeMounted', {
+        page: props.listName
     })
         .then(response => {
-
+            tableName.value = response.data.tableName;
+            console.log(tableName.value);
         })
         .catch(error => {
             console.log(error);
@@ -350,25 +351,25 @@ onBeforeMount(async () => {
 
 onMounted(async () => {
 
-    // console.log("OnFindRecord");
-
-    axios.get('http://localhost:8080/List/OnMounted', {
-        params: {
-            list: tableName
-        }
-    })
-        .then(response => {
-            lines.value = response.data;
-            lineHeader.value = Object.keys(lines.value[0]);
-            isRecordLoaded.value = !isRecordLoaded.value;
-            upToDate = true;
+    watch(tableName, (newTableName, oldTableName) => {
+        axios.get('http://localhost:8080/List/OnMounted', {
+            params: {
+                list: tableName.value
+            }
         })
-        .catch(error => {
-            console.log(error);
-        });
+            .then(response => {
+                lines.value = response.data;
+                lineHeader.value = Object.keys(lines.value[0]);
+                isRecordLoaded.value = !isRecordLoaded.value;
+                upToDate = true;
+            })
+            .catch(error => {
+                console.log(error);
+            });
 
-    window.addEventListener('keydown', handleKeydown);
-    window.addEventListener('keyup', handleKeyUp);
+        window.addEventListener('keydown', handleKeydown);
+        window.addEventListener('keyup', handleKeyUp);
+    })
 });
 
 onBeforeUpdate(async () => {
@@ -377,9 +378,9 @@ onBeforeUpdate(async () => {
 
         if (newRecord.value) {
 
-            axios.post('http://localhost:8080/List/OnNewRecord', {
-                table: tableName,
-                page: 'customerList'
+            await axios.post('http://localhost:8080/List/OnNewRecord', {
+                table: tableName.value,
+                page: props.listName
             })
                 .then(response => {
                     lines.value[lastLineIndex.value] = response.data;
@@ -394,10 +395,10 @@ onBeforeUpdate(async () => {
 
             // console.log("OnAfterGetRecord");
 
-            axios.post('http://localhost:8080/List/OnBeforeUpdate', {
-                table: tableName,
+            await axios.post('http://localhost:8080/List/OnBeforeUpdate', {
+                table: tableName.value,
                 records: lines.value,
-                page: 'customerList'
+                page: props.listName
             })
                 .then(response => {
                     lines.value = response.data;
@@ -417,10 +418,10 @@ onUpdated(async () => {
 
         // console.log("OnAfterGetCurrRecord");
 
-        axios.post('http://localhost:8080/List/OnUpdated', {
-            table: tableName,
+        await axios.post('http://localhost:8080/List/OnUpdated', {
+            table: tableName.value,
             record: lines.value[selectedRowIndex.value.at(0)],
-            page: 'customerList'
+            page: props.listName
         })
             .then(response => {
                 lines.value[selectedRowIndex.value.at(0)] = response.data;
@@ -434,8 +435,8 @@ onUpdated(async () => {
 
 onBeforeUnmount(async () => {
 
-    axios.post('http://localhost:8080/List/OnBeforeUnmount', {
-        table: tableName
+    await axios.post('http://localhost:8080/List/OnBeforeUnmount', {
+        table: tableName.value
     })
         .then(response => {
 

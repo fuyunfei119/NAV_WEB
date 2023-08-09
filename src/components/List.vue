@@ -17,6 +17,7 @@ import { useRoute } from "vue-router";
 const route = useRoute();
 const ControlBarRef = ref(ControlBarVue);
 const ListPartRef = ref(ListPart);
+const tableName = ref();
 
 function OnChangeControlBar(modules) {
     ControlBarRef.value.RenderButtons(modules);
