@@ -81,8 +81,8 @@ function selectRow(rowIndex) {
         console.log("OnInsertRecord");
 
         axios.post('http://localhost:8080/List/OnInsertRecord', {
-            table: tableName,
-            page: pageName,
+            table: tableName.value,
+            page: props.listName,
             record: lines.value[newRecordIndex.value]
         })
             .then(response => {
@@ -147,6 +147,7 @@ function handleArrowDown() {
         if (!newRecord.value) {
             selectRow(selectedRowIndex.value[0] + 1);
             selectedInputIndex.value += rowCount.value;
+            console.log(selectedInputIndex);
             tdElement.value[selectedInputIndex.value].focus();
         } else {
             selectRow(selectedRowIndex.value[0] + 1);
@@ -238,15 +239,15 @@ function updateLineAfterAction(actionName) {
     } else if (actionName === 'Delete') {
 
         axios.post('http://localhost:8080/List/DeleteLine', {
-            table: tableName,
+            table: tableName.value,
             records: selectedRowIndex.value.map(index => ({ ...lines.value[index] }))
         })
             .then(response => {
                 if (response.data) {
                     axios.post('http://localhost:8080/List/OnBeforeUpdate', {
-                        table: tableName,
+                        table: tableName.value,
                         records: lines.value,
-                        page: pageName
+                        page: props.listName
                     })
                         .then(response => {
                             if (response.data) {
@@ -297,7 +298,7 @@ function updateLineAfterAction(actionName) {
         return;
     } else {
         axios.post('http://localhost:8080/List/OnBeforeUpdate', {
-            table: tableName,
+            table: tableName.value,
             records: lines.value
         })
             .then(response => {
@@ -318,8 +319,8 @@ const updateFieldAfterValidate = (value, header, rowIndex, item, event) => {
     }
 
     axios.post('http://localhost:8080/List/PageFieldValidate', {
-        table: tableName,
-        page: pageName,
+        table: tableName.value,
+        page: props.listName,
         currentValue: value,
         newValue: newValue,
         field: header,
@@ -342,7 +343,6 @@ onBeforeMount(async () => {
     })
         .then(response => {
             tableName.value = response.data.tableName;
-            console.log(tableName.value);
         })
         .catch(error => {
             console.log(error);
