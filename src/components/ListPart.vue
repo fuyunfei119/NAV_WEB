@@ -64,7 +64,8 @@ const openCard = (RecordID) => {
             name: 'card',
             component: Card,
             query: {
-                Id: RecordID
+                Id: RecordID,
+                table: tableName.value
             },
         },
     )
@@ -147,7 +148,6 @@ function handleArrowDown() {
         if (!newRecord.value) {
             selectRow(selectedRowIndex.value[0] + 1);
             selectedInputIndex.value += rowCount.value;
-            console.log(selectedInputIndex);
             tdElement.value[selectedInputIndex.value].focus();
         } else {
             selectRow(selectedRowIndex.value[0] + 1);
@@ -271,8 +271,6 @@ function updateLineAfterAction(actionName) {
         lineHeader.value.forEach((header) => {
             newRow[header] = '';
         });
-
-        console.log(newRow);
 
         lines.value.push(newRow);
 

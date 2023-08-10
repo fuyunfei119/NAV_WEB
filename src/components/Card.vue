@@ -3,7 +3,7 @@
     <div class="container-Card">
         <CardHeaderBar @UpdateRecordOnBeforeReturnBack="UpdateRecordOnBeforeReturnBack"></CardHeaderBar>
         <CardControlBar @RaiseActionForCard="RaiseActionForCard"></CardControlBar>
-        <CardContent ref="CardContentRef" :newEntity="route.query.newEntity" :RecordID="route.query.Id"></CardContent>
+        <CardContent ref="CardContentRef" :newEntity="route.query.newEntity" :RecordID="route.query.Id" :table="route.query.table"></CardContent>
     </div>
 </template>
 

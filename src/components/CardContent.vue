@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, defineProps, watch, defineExpose } from 'vue';
+import { ref, onMounted, defineProps, watch, defineExpose, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted } from 'vue';
 import CardFields from '../components/CardFields.vue'
 import SubPageLines from '../components/SubPageLines.vue'
 
@@ -18,7 +18,8 @@ import axios from 'axios';
 
 const props = defineProps({
     RecordID: String,
-    newEntity: Boolean
+    newEntity: Boolean,
+    table: String
 })
 
 const fields = ref([]);
@@ -40,9 +41,6 @@ const GetRecordById = async (RecordID) => {
         recordID: RecordID
     })
         .then(response => {
-            response.data.forEach(group => {
-                console.log(group.fields);
-            })
             fields.value = response.data;
         })
         .catch(error => {
@@ -84,8 +82,37 @@ function OnRenderAction(actionName) {
 watch(fields, (newfields) => {
 }, { deep: true });
 
+onBeforeMount(async () => {
+
+    await axios.post('http://localhost:8080/Card/OnBeforeMounted', {
+        table: props.table
+    })
+        .then(response => {
+            
+        })
+        .catch(error => {
+            console.log(error);
+        });
+})
+
 onMounted(async () => {
     GetRecordById(props.RecordID);
+})
+
+onBeforeUpdate(async () => {
+
+})
+
+onUpdated(async () => {
+
+})
+
+onBeforeUnmount(async () => {
+
+})
+
+onUnmounted(async () => {
+
 })
 
 defineExpose({
