@@ -25,6 +25,10 @@ const props = defineProps({
 const fields = ref([]);
 const CardFieldsRef = ref();
 
+const isRecordLoaded = ref(false);
+
+let upToDate = false;
+
 const UpdateRecord = (groupName, index, value) => {
     fields.value.forEach(field => {
         if (field.groupName === groupName.value) {
@@ -32,21 +36,6 @@ const UpdateRecord = (groupName, index, value) => {
         }
     });
 };
-
-const GetRecordById = async (RecordID) => {
-
-    axios.post('http://localhost:8080/GetRecordById', {
-        cardID: 'customerCard',
-        table: 'customer',
-        recordID: RecordID
-    })
-        .then(response => {
-            fields.value = response.data;
-        })
-        .catch(error => {
-            console.log(error);
-        });
-}
 
 const InsertRecord = async () => {
 
@@ -84,11 +73,13 @@ watch(fields, (newfields) => {
 
 onBeforeMount(async () => {
 
+    console.log("OnOpenPage");
+
     await axios.post('http://localhost:8080/Card/OnBeforeMounted', {
         table: props.table
     })
         .then(response => {
-            
+
         })
         .catch(error => {
             console.log(error);
@@ -96,23 +87,85 @@ onBeforeMount(async () => {
 })
 
 onMounted(async () => {
-    GetRecordById(props.RecordID);
+
+    console.log("OnFindRecord");
+
+    await axios.post('http://localhost:8080/Card/OnMounted', {
+        cardID: 'customerCard',
+        table: 'customer',
+        recordID: props.RecordID
+    })
+        .then(response => {
+            fields.value = response.data;
+            isRecordLoaded.value = !isRecordLoaded.value;
+        })
+        .catch(error => {
+            console.log(error);
+        });
 })
 
 onBeforeUpdate(async () => {
 
+    console.log("OnAfterGetRecord");
+
+    console.log(fields.value);
+
+    if (isRecordLoaded.value) {
+        await axios.post('http://localhost:8080/Card/OnBeforeUpdate', {
+            table: 'customer',
+            recordID: props.RecordID,
+            page: 'customerCard'
+        })
+            .then(response => {
+                fields.value = response.data;
+                isRecordLoaded.value = !isRecordLoaded.value;
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
 })
 
 onUpdated(async () => {
 
+    console.log("OnAfterGetCurrRecord");
+
+    if (!isRecordLoaded.value && upToDate) {
+
+        await axios.post('http://localhost:8080/Card/OnUpdated', {
+            table: 'customer',
+            recordID: props.RecordID,
+            page: 'customerCard'
+        })
+            .then(response => {
+                fields.value = response.data;
+                upToDate = false;
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
 })
 
 onBeforeUnmount(async () => {
 
+    console.log("OnQueryClosePage");
+
+    await axios.post('http://localhost:8080/Card/OnBeforeUnmount', {
+        table: 'customer',
+        recordID: props.RecordID,
+        page: 'customerCard'
+    })
+        .then(response => {
+
+        })
+        .catch(error => {
+            console.log(error);
+        });
 })
 
 onUnmounted(async () => {
-
+    console.log("OnClosePage");
 })
 
 defineExpose({
