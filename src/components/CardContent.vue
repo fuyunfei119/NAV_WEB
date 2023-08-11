@@ -98,6 +98,7 @@ onMounted(async () => {
         .then(response => {
             fields.value = response.data;
             isRecordLoaded.value = !isRecordLoaded.value;
+            upToDate = true;
         })
         .catch(error => {
             console.log(error);
@@ -106,11 +107,10 @@ onMounted(async () => {
 
 onBeforeUpdate(async () => {
 
-    console.log("OnAfterGetRecord");
-
-    console.log(fields.value);
-
     if (isRecordLoaded.value) {
+
+        console.log("OnAfterGetRecord");
+
         await axios.post('http://localhost:8080/Card/OnBeforeUpdate', {
             table: 'customer',
             recordID: props.RecordID,
@@ -128,9 +128,9 @@ onBeforeUpdate(async () => {
 
 onUpdated(async () => {
 
-    console.log("OnAfterGetCurrRecord");
-
     if (!isRecordLoaded.value && upToDate) {
+
+        console.log("OnAfterGetCurrRecord");
 
         await axios.post('http://localhost:8080/Card/OnUpdated', {
             table: 'customer',
