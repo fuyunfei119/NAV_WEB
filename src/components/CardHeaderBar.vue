@@ -3,6 +3,15 @@
         <div class="headerbar">
             <h4>Sales Order | Work Date: {{ new Date().toLocaleString() }}</h4>
 
+            <div>
+                <a @click="newRecord()">
+                    <h4>New</h4>
+                </a>
+                <a @click="deleteRecord()">
+                    <h4>Delete</h4>
+                </a>
+            </div>
+
             <a @click="goback()">
                 <h4>Back</h4>
             </a>
@@ -14,19 +23,23 @@
 </template>
 
 <script setup>
-import router from '@/router';
 import { defineEmits } from 'vue';
 
-const emits = defineEmits(['UpdateRecordOnBeforeReturnBack']);
+const emits = defineEmits(['UpdateRecordOnBeforeReturnBack', 'UpdateRecordOnAfternewRecord', 'UpdateRecordOnAfterDeleteRecord']);
 
 const Order_No = 10100;
 const Customer_Name = "Hamburg Software AG";
 
 const goback = () => {
-    if (window.confirm('you have modified current record. do you want to save that?')) {
-        emits('UpdateRecordOnBeforeReturnBack');
-        router.go(-1);
-    }
+    emits('UpdateRecordOnBeforeReturnBack');
+}
+
+const newRecord = () => {
+    emits('UpdateRecordOnAfternewRecord');
+}
+
+const deleteRecord = () => {
+    emits('UpdateRecordOnAfterDeleteRecord');
 }
 </script>
 
@@ -39,6 +52,20 @@ const goback = () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.headerbar>h4 {
+    flex-basis: 40%;
+}
+
+.headerbar>div {
+    flex-basis: 40%;
+    display: flex;
+    align-items: center;
+}
+
+.headerbar>div>a {
+    margin-right: 5%;
 }
 
 h4 {

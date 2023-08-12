@@ -1,9 +1,12 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
     <div class="container-Card">
-        <CardHeaderBar @UpdateRecordOnBeforeReturnBack="UpdateRecordOnBeforeReturnBack"></CardHeaderBar>
+        <CardHeaderBar @UpdateRecordOnBeforeReturnBack="UpdateRecordOnBeforeReturnBack"
+            @UpdateRecordOnAfternewRecord="UpdateRecordOnAfternewRecord"
+            @UpdateRecordOnAfterDeleteRecord="UpdateRecordOnAfterDeleteRecord"></CardHeaderBar>
         <CardControlBar @RaiseActionForCard="RaiseActionForCard"></CardControlBar>
-        <CardContent ref="CardContentRef" :newEntity="route.query.newEntity" :RecordID="route.query.Id" :table="route.query.table"></CardContent>
+        <CardContent ref="CardContentRef" :newEntity="route.query.newEntity" :RecordID="route.query.Id"
+            :table="route.query.table"></CardContent>
     </div>
 </template>
 
@@ -18,8 +21,16 @@ import { ref } from 'vue';
 const route = useRoute();
 const CardContentRef = ref();
 
+const UpdateRecordOnAfternewRecord = () => {
+    CardContentRef.value.InsertNewRecord();
+}
+
+const UpdateRecordOnAfterDeleteRecord = () => {
+    CardContentRef.value.DeleteRecord();
+}
+
 const UpdateRecordOnBeforeReturnBack = () => {
-    CardContentRef.value.InsertRecord();
+    CardContentRef.value.ReturnBack();
 }
 
 function RaiseActionForCard(actionName) {

@@ -15,7 +15,7 @@
                     </select>
 
                     <input v-else :type="item.type" :value="item.value" :readonly="editable"
-                        @input="updateField(fieldName, $event)" />
+                        @blur="updateField(fieldName, item.value, $event)" />
                 </div>
             </div>
         </div>
@@ -43,11 +43,10 @@ const showSelect = ref(false);
 
 function changeEditable() {
     editable.value = !editable.value;
-    console.log(editable.value);
 }
 
-const updateField = async (fieldName, value) => {
-    emits('UpdateRecord', groupName.value, fieldName, value);
+const updateField = async (fieldName, oldValue, event) => {
+    emits('UpdateRecord', groupName.value, fieldName, oldValue, event.currentTarget.value);
 };
 
 const getFieldOption = (item, fieldName) => {
