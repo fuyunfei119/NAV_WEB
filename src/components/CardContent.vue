@@ -50,16 +50,19 @@ const UpdateRecord = async (groupName, fieldName, oldValue, newValue) => {
     }
 
     if (isNewRecord.value) {
+
         await axios.post('http://localhost:8080/Card/ValidateRecordAfterNewRecord', {
             table: 'customer',
             page: 'customerCard',
             recordID: newRecordID.value,
+            record: record.value,
             newValue: newValue,
             oldValue: oldValue,
             fieldName: fieldName
         })
             .then(response => {
-
+                fields.value = response.data.cardGroups;
+                record.value = response.data.record;
             })
             .catch(error => {
                 console.log(error);
@@ -82,21 +85,21 @@ const UpdateRecord = async (groupName, fieldName, oldValue, newValue) => {
 
 };
 
-const OnInsertNewRecord = () => {
 
-    console.log("InsertNewRecord");
+const OnInitializeNewRecord = () => {
 
-    axios.post('http://localhost:8080/Card/InsertRecord', {
+    // console.log("InsertNewRecord");
+
+    axios.post('http://localhost:8080/Card/InitializeRecord', {
         table: 'Customer',
         page: 'customerCard',
     })
         .then(response => {
-            fields.value = response.data;
-            fields.value.forEach(field => {
-                if ('System_ID' in field.fields) {
-                    newRecordID.value = field.fields['System_ID'].value;
-                }
-            })
+            fields.value = response.data.cardGroups;
+            record.value = response.data.record;
+            if (record.value['System_ID']) {
+                newRecordID.value = record.value['System_ID'].value;
+            }
             isNewRecord.value = !isNewRecord.value;
         })
         .catch(error => {
@@ -105,7 +108,24 @@ const OnInsertNewRecord = () => {
 }
 
 const OnDeleteRecord = () => {
-    console.log("DeleteRecord");
+
+    // console.log("DeleteRecord");
+
+    axios.post('http://localhost:8080/Card/DeleteRecord', {
+        table: 'Customer',
+        page: 'customerCard',
+        record: record.value,
+        recordID: props.RecordID,
+        isNewRecord: isNewRecord.value
+    })
+        .then(response => {
+            if (response.data) {
+                router.go(-1);
+            }
+        })
+        .catch(error => {
+            console.log(error);
+        });
 }
 
 function OnRenderAction(actionName) {
@@ -122,10 +142,13 @@ async function OnReturnBack() {
         router.go(-1);
     } else {
         if (window.confirm("you have modified current record. do you want to save that?")) {
+
             await axios.post('http://localhost:8080/Card/OnBeforeUnmount', {
                 table: 'customer',
                 recordID: props.RecordID,
-                page: 'customerCard'
+                page: 'customerCard',
+                record: record.value,
+                isNewRecord: true
             })
                 .then(response => {
                     router.go(-1);
@@ -138,7 +161,7 @@ async function OnReturnBack() {
 }
 
 onBeforeMount(async () => {
-    console.log("OnOpenPage");
+    // console.log("OnOpenPage");
 
     await axios.post('http://localhost:8080/Card/OnBeforeMounted', {
         table: props.table
@@ -152,7 +175,7 @@ onBeforeMount(async () => {
 })
 
 onMounted(async () => {
-    console.log("OnFindRecord");
+    // console.log("OnFindRecord");
     await axios.post('http://localhost:8080/Card/OnMounted', {
         cardID: 'customerCard',
         table: 'customer',
@@ -171,7 +194,7 @@ onMounted(async () => {
 onBeforeUpdate(async () => {
 
     if (isRecordLoaded.value) {
-        console.log("OnAfterGetRecord");
+        // console.log("OnAfterGetRecord");
         await axios.post('http://localhost:8080/Card/OnBeforeUpdate', {
             table: 'customer',
             recordID: props.RecordID,
@@ -190,7 +213,7 @@ onBeforeUpdate(async () => {
 onUpdated(async () => {
 
     if (!isRecordLoaded.value && upToDate) {
-        console.log("OnAfterGetCurrRecord");
+        // console.log("OnAfterGetCurrRecord");
         await axios.post('http://localhost:8080/Card/OnUpdated', {
             table: 'customer',
             recordID: props.RecordID,
@@ -218,7 +241,7 @@ onUnmounted(async () => {
 defineExpose({
     ReturnBack: OnReturnBack,
     RenderAction: OnRenderAction,
-    InsertNewRecord: OnInsertNewRecord,
+    InitializeNewRecord: OnInitializeNewRecord,
     DeleteRecord: OnDeleteRecord
 })
 </script>

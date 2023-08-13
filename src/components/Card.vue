@@ -22,7 +22,7 @@ const route = useRoute();
 const CardContentRef = ref();
 
 const UpdateRecordOnAfternewRecord = () => {
-    CardContentRef.value.InsertNewRecord();
+    CardContentRef.value.InitializeNewRecord();
 }
 
 const UpdateRecordOnAfterDeleteRecord = () => {
