@@ -5,7 +5,7 @@
             </CardFields>
         </div>
 
-        <SubPageLines></SubPageLines>
+        <SubPageLines :listName="props.listpart" :subtable="props.subtable"></SubPageLines>
     </div>
 </template>
 
@@ -20,7 +20,9 @@ import router from '@/router';
 const props = defineProps({
     RecordID: String,
     newEntity: Boolean,
-    table: String
+    table: String,
+    listpart: String,
+    subtable: String
 })
 
 const record = ref();

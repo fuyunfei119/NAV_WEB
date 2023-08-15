@@ -6,7 +6,7 @@
             @UpdateRecordOnAfterDeleteRecord="UpdateRecordOnAfterDeleteRecord"></CardHeaderBar>
         <CardControlBar @RaiseActionForCard="RaiseActionForCard"></CardControlBar>
         <CardContent ref="CardContentRef" :newEntity="route.query.newEntity" :RecordID="route.query.Id"
-            :table="route.query.table"></CardContent>
+            :table="route.query.table" :listpart="listpartName" :subtable="tableName"></CardContent>
     </div>
 </template>
 
@@ -16,10 +16,13 @@ import CardControlBar from './CardControlBar.vue';
 import CardContent from './CardContent.vue';
 
 import { useRoute } from 'vue-router';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 const route = useRoute();
 const CardContentRef = ref();
+
+const listpartName = "salesLines";
+const tableName = "SalesOrder";
 
 const UpdateRecordOnAfternewRecord = () => {
     CardContentRef.value.InitializeNewRecord();
@@ -36,6 +39,10 @@ const UpdateRecordOnBeforeReturnBack = () => {
 function RaiseActionForCard(actionName) {
     CardContentRef.value.RenderAction(actionName);
 }
+
+onMounted(async () => {
+
+})
 </script>
 
 <style scoped>
