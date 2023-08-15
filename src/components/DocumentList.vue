@@ -1,6 +1,6 @@
 <template>
     <div class="Document-List">
-        <FilterBarVue ref="FilterBarVueRef" :class="filterBarVisible ? 'show' : 'hidden'" :lines="lines"
+        <FilterBarVue ref="FilterBarVueRef" :table="props.table" :class="filterBarVisible ? 'show' : 'hidden'" :lines="lines"
             @OnUpdateLinesAfterAddFiters="OnUpdateLinesAfterAddFiters">
         </FilterBarVue>
         <div class="documents">
@@ -45,7 +45,8 @@ import axios from 'axios';
 
 const props = defineProps({
     lines: Array,
-    lineHeader: Object
+    lineHeader: Object,
+    table: String
 });
 
 const emits = defineEmits(['OnUpdateLinesAfterAddFiters']);
@@ -109,7 +110,7 @@ const SortLinesByAscending = async () => {
     sortingGroups.value[currentIndex.value].sort = 'Asc';
 
     await axios.post('http://localhost:8080/SortLines', {
-        table: 'Customer',
+        table: props.table,
         filters : FilterBarVueRef.value.selectedOption,
         sort : sortingGroups.value[currentIndex.value]
     })
@@ -136,7 +137,7 @@ const SortLinesByDescending = async () => {
     sortingGroups.value[currentIndex.value].sort = 'Desc';
 
     await axios.post('http://localhost:8080/SortLines', {
-        table: 'Customer',
+        table: props.table,
         filters : FilterBarVueRef.value.selectedOption,
         sort : sortingGroups.value[currentIndex.value]
     })

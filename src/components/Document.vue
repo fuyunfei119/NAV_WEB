@@ -1,12 +1,14 @@
 <template>
     <div class="document-container">
-        <DocumentHeader 
+        <DocumentHeader
+            :table="tableName" 
             @OnToggleFilterBar="OnToggleFilterBar"
             @OnUpdateLinesAfterQuerySearch="OnUpdateLinesAfterQuerySearch"
         ></DocumentHeader>
         <DocumentList 
             :lines="lines" 
             :lineHeader="lineHeader" 
+            :table="tableName"
             @OnUpdateLinesAfterAddFiters="OnUpdateLinesAfterAddFiters"
             ref="DocumentListRef">
         </DocumentList>

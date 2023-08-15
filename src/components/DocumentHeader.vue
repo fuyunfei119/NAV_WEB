@@ -19,9 +19,13 @@
 
 <script setup>
 import router from '@/router';
-import { ref, watch, defineEmits } from 'vue';
+import { ref, watch, defineEmits, defineProps } from 'vue';
 import { debounce } from 'lodash';
 import axios from 'axios';
+
+const props = defineProps({
+    table:String
+})
 
 const emits = defineEmits(['OnToggleFilterBar','OnUpdateLinesAfterQuerySearch']);
 
@@ -33,7 +37,7 @@ const SearchContent = ref(null);
 
 const QueryWithSearchContent = debounce(async () => {
     await axios.post('http://localhost:8080/FetchSearchQuery', {
-        table: 'Customer',
+        table: props.table,
         content: SearchContent.value
     })
         .then(response => {

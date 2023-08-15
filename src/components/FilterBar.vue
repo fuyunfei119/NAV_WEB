@@ -44,6 +44,7 @@ import { debounce } from 'lodash';
 import axios from 'axios';
 
 const props = defineProps({
+    table: String,
     lines: Array
 });
 
@@ -75,7 +76,7 @@ function toggleGroupDropdown() {
 
 const InitFilterGroups = async () => {
     await axios.post(`http://localhost:8080/getfilterGroups`, {
-        table: "Customer"
+        table: props.table
     })
         .then(response => {
             filterGroupInit.value = response.data;
@@ -91,7 +92,7 @@ function isDropdownOpen(filter) {
 
 const fetchDropDownOptions = async (filter) => {
     await axios.post(`http://localhost:8080/getfilterOptions`, {
-        table: "Customer",
+        table: props.table,
         filterName: filter
     })
         .then(response => {
@@ -135,7 +136,7 @@ onUnmounted(() => {
 
 const FindSetByFilterConditions = debounce(async () => {
     await axios.post('http://localhost:8080/FindSetByFilters', {
-        table: 'Customer',
+        table: props.table,
         filters: selectedOption.value
     })
         .then(response => {
