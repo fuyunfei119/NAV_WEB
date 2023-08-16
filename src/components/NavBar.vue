@@ -11,12 +11,12 @@
 
     <div @click="ToggleSearchArea()" class="backdrop" v-if="showSearchArea"></div>
     <div class="searcharea" v-if="showSearchArea">
-        <input tabindex="1" type="text" v-model="searchContent" @keydown.enter="OpenPage" ref="searchInput">
+        <input tabindex="1" type="text" v-model="searchContent" @keydown.enter="navigateToList" ref="searchInput">
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref,watch,nextTick, defineExpose } from 'vue';
 import { useRouter } from 'vue-router';
 import List from './List.vue';
 
@@ -30,7 +30,8 @@ const ToggleSearchArea = () => {
     showSearchArea.value = !showSearchArea.value;
 }
 
-const OpenPage = () => {
+const navigateToList = () => {
+
     router.push({
         path: '/list',
         name: 'list',
@@ -38,8 +39,17 @@ const OpenPage = () => {
         query: {
             listName: searchContent.value
         }
-    })
+    });
+
+    nextTick(() => {
+        // Reset searchContent after navigation
+        searchContent.value = '';
+    });
 }
+
+defineExpose({
+    ToggleSearchArea
+})
 </script>
 
 <style scoped>
