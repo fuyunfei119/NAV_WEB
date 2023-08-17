@@ -6,7 +6,8 @@
             @UpdateRecordOnAfterDeleteRecord="UpdateRecordOnAfterDeleteRecord"></CardHeaderBar>
         <CardControlBar @RaiseActionForCard="RaiseActionForCard"></CardControlBar>
         <CardContent ref="CardContentRef" :newEntity="route.query.newEntity" :RecordID="route.query.Id"
-            :table="route.query.table" :listpart="listpartName" :subtable="tableName"></CardContent>
+            :table="route.query.table" :listpart="listpartName" :subtable="tableName">
+        </CardContent>
     </div>
 </template>
 

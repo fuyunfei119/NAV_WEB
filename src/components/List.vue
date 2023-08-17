@@ -11,7 +11,7 @@ import ControlBarVue from "../components/ControlBar.vue";
 import NavBar from "../components/NavBar.vue";
 import SubNav from "../components/SubNav.vue";
 import ListPart from "../components/ListPart.vue";
-import { onBeforeMount, onBeforeUpdate, onMounted, onUpdated, ref } from "vue";
+import { onUpdated, ref } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();

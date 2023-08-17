@@ -1,44 +1,52 @@
 <template>
-    <hr>
-    <div class="subpage-header">
-        <h4>Lines | </h4>
-        <a href="">Manage</a>
-        <a href="">Line</a>
-        <a href="">Order</a>
-    </div>
-    <hr>
+    <div>
+        <hr>
+        <div class="subpage-header">
+            <div class="header-left">
+                <h4>Lines | </h4>
+                <a href="">Manage</a>
+                <a href="">Line</a>
+                <a href="">Order</a>
+            </div>
 
-    <section>
-        <table>
-            <thead>
-                <tr>
-                    <th v-for="header in lineHeader" :key="header">{{ header }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(item, rowIndex) in lines" :key="item.id"
-                    :class="{ 'selected': selectedRowIndex.includes(rowIndex) }" @click="selectRow(rowIndex, item)">
-                    <td v-for="(value, header, index) in item" :key="header + index"
-                        :tabindex="selectedRowIndex.includes(rowIndex) ? 0 : -1" :contenteditable="contenteditable"
-                        @click=" index == 0 ? 0 : selectInput(header, index, rowIndex)"
-                        @blur="updateFieldAfterValidate(value, header, rowIndex, item, $event)" ref="tdElement">
-                        {{ value }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
+            <div class="header-right">
+                <h4 @click="zoomSubPage()">zoom</h4>
+            </div>
+        </div>
+        <hr>
+
+        <section>
+            <table>
+                <thead>
+                    <tr>
+                        <th v-for=" header  in  lineHeader " :key="header">{{ header }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="( item, rowIndex ) in  lines " :key="item.id"
+                        :class="{ 'selected': selectedRowIndex.includes(rowIndex) }" @click="selectRow(rowIndex, item)">
+                        <td v-for="( value, header, index ) in  item " :key="header + index"
+                            :tabindex="selectedRowIndex.includes(rowIndex) ? 0 : -1" :contenteditable="contenteditable"
+                            @click=" index == 0 ? 0 : selectInput(header, index, rowIndex)"
+                            @blur="updateFieldAfterValidate(value, header, rowIndex, item, $event)" ref="tdElement">
+                            {{ value }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, computed, defineExpose, nextTick, defineProps, watch } from 'vue';
+import { ref, onMounted, defineEmits, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, computed, defineExpose, nextTick, defineProps, watch } from 'vue';
 import axios from 'axios';
 
-
 const props = defineProps({
-    listName: String,
-    subtable: String
+    listName: String
 });
+
+const emits = defineEmits(['toggleShowCardFields']);
 
 const tableName = ref('');
 
@@ -61,6 +69,10 @@ const selectedInputIndex = ref(0);
 let upToDate = false;
 let shiftPressed = false;
 const keys = ['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft', 'Shift'];
+
+function zoomSubPage() {
+    emits('toggleShowCardFields');
+}
 
 function selectInput(header, index, rowIndex) {
     selectedInputIndex.value = ((rowIndex) * rowCount.value) + index;
@@ -230,13 +242,13 @@ function updateLineAfterAction(actionName) {
     } else if (actionName === 'Delete') {
 
         axios.post('http://localhost:8080/List/DeleteLine', {
-            table: props.subtable,
+            table: tableName.value,
             records: selectedRowIndex.value.map(index => ({ ...lines.value[index] }))
         })
             .then(response => {
                 if (response.data) {
                     axios.post('http://localhost:8080/List/OnBeforeUpdate', {
-                        table: props.subtable,
+                        table: tableName.value,
                         records: lines.value,
                         page: props.listName
                     })
@@ -287,7 +299,7 @@ function updateLineAfterAction(actionName) {
         return;
     } else {
         axios.post('http://localhost:8080/List/OnBeforeUpdate', {
-            table: props.subtable,
+            table: tableName.value,
             records: lines.value
         })
             .then(response => {
@@ -308,7 +320,7 @@ const updateFieldAfterValidate = (value, header, rowIndex, item, event) => {
     }
 
     axios.post('http://localhost:8080/List/PageFieldValidate', {
-        table: props.subtable,
+        table: tableName.value,
         page: props.listName,
         currentValue: value,
         newValue: newValue,
@@ -343,7 +355,7 @@ onMounted(async () => {
     watch(tableName, (newTableName, oldTableName) => {
         axios.get('http://localhost:8080/List/OnMounted', {
             params: {
-                list: props.subtable
+                list: tableName.value
             }
         })
             .then(response => {
@@ -368,7 +380,7 @@ onBeforeUpdate(async () => {
         if (newRecord.value) {
 
             await axios.post('http://localhost:8080/List/OnNewRecord', {
-                table: props.subtable,
+                table: tableName.value,
                 page: props.listName
             })
                 .then(response => {
@@ -385,7 +397,7 @@ onBeforeUpdate(async () => {
             // console.log("OnAfterGetRecord");
 
             await axios.post('http://localhost:8080/List/OnBeforeUpdate', {
-                table: props.subtable,
+                table: tableName.value,
                 records: lines.value,
                 page: props.listName
             })
@@ -408,7 +420,7 @@ onUpdated(async () => {
         // console.log("OnAfterGetCurrRecord");
 
         await axios.post('http://localhost:8080/List/OnUpdated', {
-            table: props.subtable,
+            table: tableName.value,
             record: lines.value[selectedRowIndex.value.at(0)],
             page: props.listName
         })
@@ -425,7 +437,7 @@ onUpdated(async () => {
 onBeforeUnmount(async () => {
 
     await axios.post('http://localhost:8080/List/OnBeforeUnmount', {
-        table: props.subtable
+        table: tableName.value
     })
         .then(response => {
 
@@ -439,17 +451,37 @@ onUnmounted(async () => {
     window.removeEventListener('keydown', handleKeydown);
     window.removeEventListener('keyup', handleKeyUp);
 })
+
+defineExpose({
+    updateLine: updateLineAfterAction,
+})
 </script>
 
 <style scoped>
+div {
+    overflow: auto;
+}
+
 section {
     overflow: auto;
-    max-height: 50%;
-    min-height: 50%;
+    height: 100%;
+}
+
+tbody {
+    overflow: auto;
 }
 
 .subpage-header {
     display: flex;
+    justify-content: space-between;
+}
+
+.subpage-header>.header-left {
+    display: flex;
+}
+
+.subpage-header>.header-right {
+    padding-right: 2%;
 }
 
 h4 {
@@ -493,5 +525,4 @@ th {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
 </style>

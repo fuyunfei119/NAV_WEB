@@ -1,11 +1,13 @@
 <template>
     <div class="card-content">
         <div v-for="field in fields" :key="field">
-            <CardFields ref="CardFieldsRef" :fields="field" @UpdateRecord="UpdateRecord">
+            <CardFields v-if="showCardFields" ref="CardFieldsRef" :fields="field" @UpdateRecord="UpdateRecord">
             </CardFields>
         </div>
 
-        <SubPageLines :listName="props.listpart" :subtable="props.subtable"></SubPageLines>
+        <SubPageLines @toggleShowCardFields="toggleShowCardFields" ref="SubPageRef" :listName="props.listpart"
+            :subtable="props.subtable">
+        </SubPageLines>
     </div>
 </template>
 
@@ -25,9 +27,12 @@ const props = defineProps({
     subtable: String
 })
 
+const showCardFields = ref(true);
+
 const record = ref();
 const fields = ref([]);
 const CardFieldsRef = ref();
+const SubPageRef = ref();
 const newRecordID = ref();
 
 const isNewRecord = ref(false);
@@ -36,6 +41,10 @@ const updatedField = ref({});
 const modifiedfields = ref([]);
 
 let upToDate = false;
+
+const toggleShowCardFields = () => {
+    showCardFields.value = !showCardFields.value;
+}
 
 const UpdateRecord = async (groupName, fieldName, oldValue, newValue) => {
 
@@ -93,7 +102,7 @@ const OnInitializeNewRecord = () => {
     // console.log("InsertNewRecord");
 
     axios.post('http://localhost:8080/Card/InitializeRecord', {
-        table: 'Customer',
+        table: 'customer',
         page: 'customerCard',
     })
         .then(response => {
@@ -114,7 +123,7 @@ const OnDeleteRecord = () => {
     // console.log("DeleteRecord");
 
     axios.post('http://localhost:8080/Card/DeleteRecord', {
-        table: 'Customer',
+        table: 'customer',
         page: 'customerCard',
         record: record.value,
         recordID: props.RecordID,
@@ -135,6 +144,8 @@ function OnRenderAction(actionName) {
         for (const CardField of CardFieldsRef.value) {
             CardField.changeEditable();
         }
+
+        SubPageRef.value.updateLine(actionName);
     }
 }
 
