@@ -399,6 +399,7 @@ onBeforeUpdate(async () => {
                 page: props.listName
             })
                 .then(response => {
+                    console.log(response.data);
                     lines.value = response.data;
                     lineHeader.value = Object.keys(lines.value[0]);
                     isRecordLoaded.value = !isRecordLoaded.value;
@@ -422,6 +423,7 @@ onUpdated(async () => {
             page: props.listName
         })
             .then(response => {
+                console.log(response.data);
                 lines.value[selectedRowIndex.value.at(0)] = response.data;
                 upToDate = false;
             })
