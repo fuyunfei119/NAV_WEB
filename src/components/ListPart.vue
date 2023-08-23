@@ -340,7 +340,7 @@ onBeforeMount(async () => {
         page: props.listName
     })
         .then(response => {
-            tableName.value = response.data.tableName;
+            tableName.value = response.data.TableName;
         })
         .catch(error => {
             console.log(error);
@@ -349,7 +349,7 @@ onBeforeMount(async () => {
 
 onMounted(async () => {
 
-    watch(tableName, (newTableName, oldTableName) => {
+    watch(tableName, () => {
         axios.get('http://localhost:8080/List/OnMounted', {
             params: {
                 list: tableName.value
@@ -391,15 +391,12 @@ onBeforeUpdate(async () => {
             return;
         } else {
 
-            // console.log("OnAfterGetRecord");
-
             await axios.post('http://localhost:8080/List/OnBeforeUpdate', {
                 table: tableName.value,
                 records: lines.value,
                 page: props.listName
             })
                 .then(response => {
-                    console.log(response.data);
                     lines.value = response.data;
                     lineHeader.value = Object.keys(lines.value[0]);
                     isRecordLoaded.value = !isRecordLoaded.value;
@@ -415,15 +412,12 @@ onUpdated(async () => {
 
     if (!isRecordLoaded.value && upToDate) {
 
-        // console.log("OnAfterGetCurrRecord");
-
         await axios.post('http://localhost:8080/List/OnUpdated', {
             table: tableName.value,
             record: lines.value[selectedRowIndex.value.at(0)],
             page: props.listName
         })
             .then(response => {
-                console.log(response.data);
                 lines.value[selectedRowIndex.value.at(0)] = response.data;
                 upToDate = false;
             })

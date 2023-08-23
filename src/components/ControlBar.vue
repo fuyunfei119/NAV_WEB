@@ -105,7 +105,7 @@ function RenderButtons(moduleName) {
 const WithSales = () => {
     ButtonsToRender.value = ButtonsOfSales;
     axios.post('http://localhost:8080/GetActions', {
-        page: 'CustomerList'
+        page: 'customerList'
     })
         .then(response => {
             ButtonsToRender.value = [...ButtonsToRender.value, ...response.data];
@@ -134,7 +134,7 @@ const withDefaults = () => {
 const RaiseAction = (actionName) => {
 
     axios.post('http://localhost:8080/RaiseActions', {
-        page: 'CustomerList',
+        page: 'customerList',
         actionName: actionName
     })
         .then(response => {
