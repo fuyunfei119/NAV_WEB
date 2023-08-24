@@ -337,40 +337,38 @@ const updateFieldAfterValidate = (value, header, rowIndex, item, event) => {
         });
 };
 
-onBeforeMount(async () => {
+onBeforeMount(async () => { });
+
+onMounted(async () => {
+
+    // watch(tableName, (newTableName, oldTableName) => {
 
     await axios.post('http://localhost:8080/List/OnBeforeMounted', {
         page: props.listName
     })
         .then(response => {
-            tableName.value = response.data.tableName;
+            tableName.value = response.data.TableName;
         })
         .catch(error => {
             console.log(error);
         });
-})
 
-onMounted(async () => {
-
-    watch(tableName, (newTableName, oldTableName) => {
-        axios.get('http://localhost:8080/List/OnMounted', {
-            params: {
-                list: tableName.value
-            }
-        })
-            .then(response => {
-                lines.value = response.data;
-                lineHeader.value = Object.keys(lines.value[0]);
-                isRecordLoaded.value = !isRecordLoaded.value;
-                upToDate = true;
-            })
-            .catch(error => {
-                console.log(error);
-            });
-
-        window.addEventListener('keydown', handleKeydown);
-        window.addEventListener('keyup', handleKeyUp);
+    await axios.post('http://localhost:8080/List/OnMounted', {
+        table: tableName.value
     })
+        .then(response => {
+            lines.value = response.data;
+            lineHeader.value = Object.keys(lines.value[0]);
+            isRecordLoaded.value = !isRecordLoaded.value;
+            upToDate = true;
+        })
+        .catch(error => {
+            console.log(error);
+        });
+
+    window.addEventListener('keydown', handleKeydown);
+    window.addEventListener('keyup', handleKeyUp);
+    // })
 });
 
 onBeforeUpdate(async () => {
@@ -436,15 +434,15 @@ onUpdated(async () => {
 
 onBeforeUnmount(async () => {
 
-    await axios.post('http://localhost:8080/List/OnBeforeUnmount', {
-        table: tableName.value
-    })
-        .then(response => {
+    // await axios.post('http://localhost:8080/List/OnBeforeUnmount', {
+    //     table: tableName.value
+    // })
+    //     .then(response => {
 
-        })
-        .catch(error => {
-            console.log(error);
-        });
+    //     })
+    //     .catch(error => {
+    //         console.log(error);
+    //     });
 })
 
 onUnmounted(async () => {

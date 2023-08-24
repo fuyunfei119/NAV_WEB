@@ -83,8 +83,10 @@ const UpdateRecord = async (groupName, fieldName, oldValue, newValue) => {
             table: 'customer',
             recordID: props.RecordID,
             page: 'customerCard',
-            updatedField: updatedField.value,
-            oldValue: oldValue
+            updatedField: updatedField.value.field,
+            fieldName: fieldName,
+            oldValue: oldValue,
+            newValue: newValue
         })
             .then(response => {
                 console.log(response.data);
@@ -173,8 +175,9 @@ async function OnReturnBack() {
     }
 }
 
-onBeforeMount(async () => {
-    // console.log("OnOpenPage");
+onBeforeMount(async () => { });
+
+onMounted(async () => {
 
     await axios.post('http://localhost:8080/Card/OnBeforeMounted', {
         table: props.table
@@ -185,10 +188,7 @@ onBeforeMount(async () => {
         .catch(error => {
             console.log(error);
         });
-})
 
-onMounted(async () => {
-    // console.log("OnFindRecord");
     await axios.post('http://localhost:8080/Card/OnMounted', {
         cardID: 'customerCard',
         table: 'customer',
@@ -207,7 +207,7 @@ onMounted(async () => {
 onBeforeUpdate(async () => {
 
     if (isRecordLoaded.value) {
-        // console.log("OnAfterGetRecord");
+
         await axios.post('http://localhost:8080/Card/OnBeforeUpdate', {
             table: 'customer',
             recordID: props.RecordID,
@@ -226,15 +226,16 @@ onBeforeUpdate(async () => {
 onUpdated(async () => {
 
     if (!isRecordLoaded.value && upToDate) {
-        // console.log("OnAfterGetCurrRecord");
+
         await axios.post('http://localhost:8080/Card/OnUpdated', {
             table: 'customer',
             recordID: props.RecordID,
             page: 'customerCard'
         })
             .then(response => {
-                fields.value = response.data.cardGroups;
-                record.value = response.data.record;
+                console.log(response.data.CardGroups);
+                fields.value = response.data.CardGroups;
+                record.value = response.data.Record;
                 upToDate = false;
             })
             .catch(error => {

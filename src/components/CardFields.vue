@@ -5,7 +5,7 @@
         <hr>
 
         <div class="content">
-            <div class="item" v-for="(item, fieldName, index) in allFields.value" :key="fieldName">
+            <div class="item" v-for="(item, fieldName) in allFields.value" :key="fieldName">
                 <h4>{{ fieldName }}</h4>
                 <hr>
 
@@ -13,6 +13,12 @@
                     <select v-if="item.type === 'enumeration'" @click="getFieldOption(item, fieldName)">
                         <option v-for="option in selectOptions" :key="option">{{ option }}</option>
                     </select>
+
+                    <input v-else-if="item.type === 'date'" :type="item.type" :value="formattedDate(item.value)"
+                        :readonly="editable" @blur="updateField(fieldName, item.value, $event)" />
+
+                    <input v-else-if="item.type === 'timestamp'" type="datetime-local" :value="formattedDate(item.value)"
+                        :readonly="editable" @blur="updateField(fieldName, item.value, $event)" />
 
                     <input v-else :type="item.type" :value="item.value" :readonly="editable"
                         @blur="updateField(fieldName, item.value, $event)" />
@@ -45,8 +51,20 @@ function changeEditable() {
     editable.value = !editable.value;
 }
 
+// const updateDateField = (fieldName, oldValue, event) => {
+//     emits('UpdateRecord', groupName.value, fieldName, oldValue, new Date(event.currentTarget.value).getTime());
+// }
+
 const updateField = async (fieldName, oldValue, event) => {
     emits('UpdateRecord', groupName.value, fieldName, oldValue, event.currentTarget.value);
+};
+
+const formattedDate = (timestamp) => {
+    const date = new Date(timestamp);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 };
 
 const getFieldOption = (item, fieldName) => {
